@@ -1,7 +1,14 @@
-#Edu
-# browseURL('https://www.youtube.com/watch?v=l4BAfRekohk')
-# browseURL('https://scrnaseq-course.cog.sanger.ac.uk/website/index.html')
-# browseURL('(http://bar.utoronto.ca/eplant') #, a visual analytic tool for exploring multiple levels of Arabidopsis thaliana data ')
+########################################################################
+#         CICT for Single Cell RNA Seq
+#      This code is an R translation of Causal Inference Using Composition of Transaction (CICT) 
+#      For original paper and concepts, please refer to the paper :
+#              Revisiting Causality Inference in Memory-less Transition Networks  at                      https://arxiv.org/abs/1608.02658
+#       
+#        Abbas Shojaee, 2016-2022
+#        All rights reserved. Please do not use, reuse or distribute in any form
+#        The code is provided only for use at Huang Lab for Genomic Analysis at NYU https://huanglab.rbind.io/
+########################################################################
+
 # Environment ----- 
 if(FALSE){
   if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -86,11 +93,6 @@ filter<-dplyr::filter
 group_by<-dplyr::group_by
 require(zeallot)
 
-#IDEAS:
-#1- directed edge between each gene and all genes in previous time frame
-#2- Use a second round RF on CICT predictions, keep most important influencers as causes
-#3- replace mutual information with a better including a conditional on all others form
-#4- MI (g1,gx.LAGk ) | MI(g1,gn.LAG1)  #MI(g1,gx ge and particular gx using all consequent time frames, conditioned on g1 and all gj in the previous time frame
 
 # Function_definitions -----
 
@@ -375,11 +377,6 @@ extractLmoments = function(v)
   }
 }
 
-# definition from package fGrach Has error in calculation like with p=.75 and xi= 0.007588785 returns NA
-#use sn::qsc instead qsc(p, xi = 0, omega = 1, alpha = 0, dp = NULL)
-#xi vector of location parameters.  = mean
-#omega vector of (positive) scale parameters. = SD
-#alpha vector of slant parameters = Skewness
 
 .myqsnorm<- function(p, xi)
 {
@@ -530,13 +527,7 @@ myplotViolin<-function(theTitle,dt,variables, group1, group2,
 }
 
 read.tsv <- function(..., header=F, sep='\t', quote='', comment='', na.strings='', stringsAsFactors=FALSE) {
-  # read.table() wrapper with default settings for no-nonsense, pure TSV
-  # Typical use case is output from another program.
-  # (R's defaults are more geared for human-readable datafiles, which is less
-  # feasible for large-scale data anyway.)
-  # These options are substantially faster than read.table() defaults.
-  #   (see e.g. LINK)
-  # stringsAsFactors is the devil.
+
   
   args = list(...)
   args$header = header
@@ -838,15 +829,6 @@ MyTableOne <- function( .descData,covarTableOne,headNote, footNote,
   fx2
 }
 
-# EXPERIMENTING Curve distance measure Distribution fitting  ----
-#https://daviddalpiaz.github.io/stat3202-au18/notes/fitting.html  
-#https://cran.r-project.org/web/packages/fitdistrplus/vignettes/FAQ.html
-#http://zoonek2.free.fr/UNIX/48_R/07.html
-#https://machinelearningmastery.com/probability-density-estimation/
-#https://www.scienceforums.net/topic/56448-need-help-with-code-to-calculate-mutual-information/
-
-# USE https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance
-# fast frechet, check kmlShape package
 
 library(fitdistrplus) #fit distributions
 library(gendist)
@@ -1349,367 +1331,9 @@ if(FALSE){
     hist(InDegree+OutDegree, xlab="Total Degree", main="Total Degree Distribution", prob=FALSE)
     par(mfrow=c(1,1)) # Restore display
     
-    #Average Path Length 
-    #Walks: A walk is a sequence of nodes and ties, starting and ending with nodes, in which each node is incident with the edges
-    #...following and preceding it in the sequence (Wasserman and Faust 1994, p. 105).
-    # The beginning and ending node of a walk may be differeent, some nodes may be included more than once, and some ties may be included more than once.
-    #Paths: A path is a walk where all the nodes and all the ties are distinct.
-    #A shortest path between two nodes is refrred to as a geodesic (Wasserman and Faust 1994, p. 110)
-    #Average path length or the geodesic distance is the average number of steps along the shortest paths for all possible pairs of nodes.
-    
-    # By default, nodes that cannot reach each other have a geodesic distance of infinity. 
-    # Because, Inf is the constant for infinity, we need to replace INF values to calculate the shortest path length.
-    # Here we replace infinity values with 0 for visualization purposes.
-    
-    AHS_Geo <- geodist(gs.sn, inf.replace=0)
-    #AHS_Geo <- geodist(gs.sn)                #Matrix with Infinity
-    
-    #AHS_Geo$gdist #The length of the shortest path for all pairs of nodes.
-    #AHS_Geo$counts  #The number of shortest path for all pairs of nodes.
-    
-    Geo_Dist = AHS_Geo$gdist #Shortest Path Matrix
-    hist(Geo_Dist)
-    
-    #Global Clustering Coefficient: Transitivity
-    #Transitivity: A triad involving actors i, j, and k is transitive if whenever i --> j and j --> k then i --> k (Wasserman and Faust 1994, p. 243)
-    gtrans(gs.sn)
-    #Weak and Weak Census
-    #Weak transitivity is the most common understanding, the one reflected in Wasserman's and Faust's definition.
-    #When 'weak' is specified as the measure, R returns the fraction of potentially intransitive triads obeying the weak condition
-    #Transitive Triads/Transtive and Intransitive Triads.
-    #In contrast, when 'weak census' is specfified, R returns the count of transitive triads.
-    gtrans(gs.sn, mode='digraph', measure='weak')
-    gtrans(gs.sn, mode='digraph', measure='weakcensus')
-    
-    #CUG (Conditional Uniform Graph) Tests:  IS this Graph More Clustered than We Would Expect by Chance
-    #See Wasserman and Faust 1994, p. 543-545 for more information.
-    #Note: These tests are somewhat computationally intensive.
-    #Conducting these tests, we find that athough the transitivity is higher than would be expect by chance given the network's size;
-    #...it is not greater than would be expected given either the number of edges or dyads.
-    
-    #Take long time
-    #Test transitivity against size
-    if(FALSE)  Cug_Size <- cug.test(gs.sn,gtrans,cmode="size");plot(Cug_Size)
-    
-    
-    #Test transitivity against density
-    Cug_Edges <- cug.test(gs.sn,gtrans,cmode="edges");plot(Cug_Edges)
-    
-    #Test Transitivity against the Dyad Census
-    if(FALSE) Cug_Dyad <- cug.test(gs.sn,gtrans,cmode="dyad.census");plot(Cug_Dyad)
-    
-    ###########################
-    #   MESO-LEVEL MEASURES   #
-    ###########################
-    
-    #Dyads
-    #Null-Dyads: Pairs of nodes with no arcs between them
-    #Asymmetric dyads: Pairs of nodes that have an arc between the two nodes going in one direction or the other, but not both
-    #Mutual/Symmetric Dyad: Pairs of nodes that have arcs going to and from both nodes  <--> 
-    
-    #Number of Symmetric Dyads
-    mutuality(gs.sn)
-    
-    #Dyadic Ratio: Ratio of Dyads where (i,j)==(j,i) to all Dyads
-    grecip(gs.sn, measure="dyadic")
-    
-    #Edgwise Ratio: Ratio of Reciprocated Edges to All Edges
-    grecip(gs.sn, measure="edgewise")
-    
-    #Directed Triad Census
-    #Triads can be in Four States
-    #Empty: A, B, C
-    #An Edge: A -> B, C
-    #A Star (2 Edges): A->B->C
-    #Closed: A->B->C->A
-    
-    #Triad types (per Davis & Leinhardt):
-    #003  A, B, C, empty triad.
-    #012  A->B, C 
-    #102  A<->B, C  
-    #021D A<-B->C 
-    #021U A->B<-C 
-    #021C A->B->C
-    #111D A<->B<-C
-    #111U A<->B->C
-    #030T A->B<-C, A->C
-    #030C A<-B<-C, A->C.
-    #201  A<->B<->C.
-    #120D A<-B->C, A<->C.
-    #120U A->B<-C, A<->C.
-    #120C A->B->C, A<->C.
-    #210  A->B<->C, A<->C.
-    #300  A<->B<->C, A<->C, completely connected.
-    
-    triad.census(gs.sn) %>% kable()
-    
-    #Hierarchy Measures: Components,Cut Points, K-Cores, and Cliques
-    #Components: Components are maximally connected subgraphs (Wasserman and Faust 1994, p. 109). 
-    #Recall that community 7 has two large components and several small dyads and triads.
-    #There are two types of components: strong and weak.
-    #Strong components are components connected through directed paths (i --> j, j --> i)
-    #Weak components are components connected through semi-paths (--> i <-- j --> k)
-    components(gs.sn, connected="strong")
-    components(gs.sn, connected="weak")
-    
-    #Which node belongs to which component?
-    AHS_Comp <- component.dist(gs.sn, connected="strong")
-    AHS_Comp
-    
-    AHS_Comp$membership # The component each node belongs to
-    AHS_Comp$csize      # The size of each component
-    AHS_Comp$cdist      # The distribution of component sizes
-    
-    #Cut-Sets and Cut-Points: Cut-sets describe the connectivity of the graph based on the removal of nodes, while cut-points describe
-    #...the connectivity of the graph based on the removal of lines (Harary 1969)
-    #k refers to the number of nodes or lines that would need to be removed to reduce the graph to a disconnected state.
-    cutpoints(gs.sn, connected="weak")
-    gplot(gs.sn,vertex.col=2+cutpoints(gs.sn,mode="graph",return.indicator=T))
-    #The plot only shows subgraphs consisting of nodes with a degree of 2 or more.
-    #The green nodes indicate cut-ponts where the removal of the node would separate one subgraph from another.
-    
-    #Let's remove one of the cutpoints and count components again.
-    AHS_Cut <- gs.sn[-11,-11]
-    #"-11" selects all the elments in the first row/column.
-    #So, AHS_Cut will be gs.sn with node 1 removed.
-    
-    components(AHS_Cut, connected="strong")  #There are 74 strong components in AHS_Cut compared to 73 in gs.sn
-    
-    #Bi-Components: Bi-Components refer to subgraphs that require at least the removal of two nodes or two lines to transform it into a 
-    #...disconnected set of nodes. 
-    #In large highly connected networks, we frequently analyze the properties of the largest bi-component to get a better understanding
-    #...of the social system represented by the network.
-    bicomponent.dist(gs.sn) 
-    
-    #Identify Cohesive Subgroups
-    #K-Cores: A k-core is a subgraph in which each node is adjacent to at least a minimum number of, k, to the other nodes in the subgraph.
-    #..., while a k-plex specifies the acceptable number of lines that can be absent from each node (Wasserman and Faust 1994, p. 266). 
-    kcores(gs.sn) 
-    #Show the nesting of cores
-    AHS_kc<-kcores(gs.sn,cmode="indegree")
-    gplot(gs.sn,vertex.col=rainbow(max(AHS_kc)+1)[AHS_kc+1])
-    
-    #Now, showing members of the 4-core only (All Nodes Have to Have a Degree of 4)
-    gplot(gs.sn[AHS_kc>3,AHS_kc>3],vertex.col=rainbow(max(AHS_kc)+1)[AHS_kc[AHS_kc>3]+1])
-    
-    #Cliques:  A clique is a maximally complete subgraph of three or more nodes.
-    #In other words, a clique consists of a subset of nodes, all of which are adjacent to each other, and where there are no other 
-    #...nodes that are also adjacent to all of the members of the clique (Luce and Perry 1949)
-    
-    #We need to symmetrize recover all ties between i and j.
-    set.network.attribute(gs.sn, "directed", FALSE) 
-    
-    #The clique census returns a list with several important elements 
-    #Let's assign that list to an object we'll call AHS_Cliques.
-    #The clique.comembership parameter takes values "none" (no co-membership is computed),
-    #"sum" (the total number of shared cliques for each pair of nodes is computed),
-    #bysize" (separate clique co-membership is computed for each clique size)
-    
-    AHS_Cliques <- clique.census(gs.sn, mode = "graph", clique.comembership="sum")
-    AHS_Cliques # an object that now contains the results of the clique census
-    
-    #The first element of the result list is clique.count: a matrix containing the number of cliques of different 
-    #...sizes (size = number of nodes in the clique).
-    #The first column (named Agg) gives you the total  number of cliqies of each size,
-    #The rest of the columns show the number of cliques each node participates in.
-    
-    #Note that this includes cliques of sizes 1 & 2. We have those when the largest fully connected structure includes just 1 or 2 nodes.
-    AHS_Cliques$clique.count
-    
-    #The second element is the clique co-membership matrix:
-    View(AHS_Cliques$clique.comemb)
-    
-    # The third element of the clique census result is a list of all found cliques:
-    # (Remember that a list can have another list as its element)
-    AHS_Cliques$cliques # a full list of cliques, all sizes
-    
-    AHS_Cliques$cliques[[1]] # cliques size 1
-    AHS_Cliques$cliques[[2]] # cliques of size 2
-    AHS_Cliques$cliques[[3]] # cliques of size 3
-    AHS_Cliques$cliques[[4]] # cliques of size 4
-    
   }
-  ###########################
-  #   NODE LEVEL MEASURES   #
-  ###########################
-  
-  #Restoring Our Directed Network
-  set.network.attribute(gs.sn, "directed", TRUE) 
-  
-  #Reachability
-  #An actor is "reachable" by another if there exists any set of connections by which we can trace from the source to the target actor, 
-  #regardless of how many other nodes fall between them (Wasserman and Faust 1994, p. 132).
-  #If the network is a directed network, then it possible for actor i to be able to reach actor j, but for j not to be able to reach i.
-  #We can classify how connected one node is to another by considering the types of paths connecting them.
-  #Weakly Connected: The nodes are connected by a semi-path (--> i <--- j ---> k)
-  #Unilaterally Connected: The nodes are connected by a path (i --> j --> k)
-  #Strongly Connected: The nodes are connected by a path from i to k and a path from k to i.
-  #Recursively Connected: The nodes are strongly connected, and the nodes along the path from i to k and from k to i are the same in reverse order.
-  #e.g., i <--> j <--> k 
-  
-  #Interpreting the reachability matrix, the first column indicates a specific node, the second an alter (alters can occur multiple times),
-  #and the third column indicates the number of paths connecting the two (total is a cumulative count of the number of paths in the network).
-  #For example, interpreting row 2, node 2 can reach node 235 through 235 paths (470-235), whereas in the middle of the list node 343 can reach node 1 through only 1 path.
-  reachability(gs.sn) 
-  ??reachablity #For more information on this measure
-  
-  #Degree Centraltiy: Total, In-Degree, Out-Degree
-  
-  #In-Degree Centrality: The number of nodes adjacent to node i (Wasserman and Faust 1994, p. 126). i <--
-  InDegree <- degree(gs.sn, cmode="indegree")
-  InDegree <- InDegree * .15                #Scaling in-degree to avoid high in-degree nodes from crowding out the rest of the nodes
-  
-  set.vertex.attribute(gs.sn, "InDegree", InDegree)
-  
-  #Out-Degree Centrality: The number of nodes adjacent from node i (Wasserman and Faust, p. 126). i -->
-  OutDegree <- degree(gs.sn, cmode="outdegree")
-  OutDegree <- OutDegree * .5                 #Scaling in-degree to avoid high in-degree nodes from crowding out the rest of the nodes
-  
-  set.vertex.attribute(gs.sn, "OutDegree", OutDegree)
-  
-  #Total Degree Centrality: The Total Number of Adjacent Nodes (In-Degree + Out-Degree)
-  gs.v$TotalDegree <- degree(gs.sn, cmode="outdegree") + degree(gs.sn, cmode="indegree")
-  TotalDegree <- gs.v$TotalDegree * .4
-  
-  set.vertex.attribute(gs.sn, "TotalDegree", TotalDegree)
-  
-  #Try Sizing by the Different Degrees
-  set.seed(12345)
-  ggnetwork::ggnetwork(gs.sn) %>%
-    ggplot(aes(x = x, y = y, xend = xend, yend = yend)) + 
-    geom_edges(color = "lightgray") +
-    geom_nodes(color = gs.v$color, size = InDegree*3) +       
-    #geom_nodelabel_repel (color = Race, label = Race) +#   For networks with fewer nodes, we might want to label
-    theme_blank() + 
-    geom_density_2d()
-  
-  #Path Centralities: Closeness Centrality, Information Centrality, Betweenness Centrality
-  
-  #Closeness Centrality: Closeness centrality measures the geodesic distances of node i to all other nodes.
-  #Functionally, this measures range from 0 to 1, and is the inverse average distance between actor i and all other actors (Wasserman and Faust 1994, p. 185)
-  #This measure does not work well when there are disconnected components because the distances between components cannot be summed as
-  #...they are technically infinite. There are several work arounds, see Acton and Jasny's alternative below.
-  
-  AHS_Closeness <- closeness(gs.sn, gmode="digraph", cmode="directed")
-  
-  hist(AHS_Closeness , xlab="Closness", prob=TRUE) 
-  
-  #Alternative Approach to Measuring Closesness from the Geodesic Distances Matrix from Acton's and Jasny's Statnet Tutorial
-  Closeness <- function(x){ # Create an alternate closeness function!
-    geo <- 1/geodist(x)$gdist # Get the matrix of 1/geodesic distance
-    diag(geo) <- 0 # Define self-ties as 0
-    apply(geo, 1, sum) # Return sum(1/geodist) for each vertex
-  }
-  
-  gs.v$closeness <-  Closeness(gs.sn) ;setDT(gs.v)                       #Applying the function
-  #View(gs.v[closeness!=0,])
-  hist( gs.v$closeness , xlab="Alt. Closeness", prob=TRUE)         #Better behaved!
-  
-  #Information Centrality: Information Centrality measures the information flowing from node i.
-  #In general, actors with higher information centrality are predicted to have greater control over the flow of information within a network.
-  #Highly information-central individuals tend to have a large number of short paths to many others within the social structure.
-  ?infocent  #For more information
-  
-  gs.v$infocent <- infocent(gs.sn, rescale=TRUE)
-  hist(gs.v$infocent , xlab="Information Centrality", prob=TRUE) 
-  
-  gplot(gs.sn, vertex.cex=(AHS_Info)*250, gmode="graph") # Use w/gplot
-  #As suggested by the histogram there is relatively little variation in information centrality in this graph.
-  
-  #Betweenness Centrality: The basic intuition behind Betweenness Centrality is that the actor between all the other actors in the 
-  #...has some control over the paths in the network. 
-  #Functionally, Betweenness Centrality is the ratio of the sum of all shortest paths linking j and k that includes node i over 
-  #...all the shortest paths linking j and k (Wasserman and Faust 1994, p. 191)
-  
-  gs.v$betweenness <- betweenness(gs.sn, gmode="digraph")  
-  hist(gs.v$betweenness , xlab="Betweenness Centrality", prob=TRUE) 
-  
-  gplot(gs.sn, vertex.cex=sqrt(gs.v$betweenness)/25, gmode="digraph") 
-  
-  #Comparing Closeness and Betweenness Centralities
-  cor(gs.v$closeness, gs.v$betweenness)                  #Correlate our adjusted measure of closeness with betweenness
-  plot(gs.v$closeness, gs.v$betweenness)                            #Plot the bivariate relationship
-  
-  #Measures of Power in Influence Networks: Bonachich and Eigenvector Centrality
-  
-  #Bonachich Centrality: The intuition behind Bonachich Power Centrality is that the power of node i is recursively defined 
-  #...by the sum of the power of its alters. 
-  #The nature of the recursion involved is then controlled by the power exponent: positive values imply that vertices become 
-  #...more powerful as their alters become more powerful (as occurs in cooperative relations), while negative values imply 
-  #...that vertices become more powerful only as their alters become weaker (as occurs in competitive or antagonistic relations).
-  ?bonpow   #For more information about the measure
-  
-  #Eigenvector Centrality: Conceptually, the logic behind eigenvectory centrality is that node i's influence is proportional to the 
-  #...to the centraltities' of the nodes adjacent to node i. In other words, we are important because we know highly connected people.
-  #Mathematically, we capture this concept by calculating the values of the first eigenvector of the graph's adjacency matrix.
-  ?evcent   #For more information.
-  
-  gs.v$eigen <- evcent(gs.sn)
-  hist(gs.v$eigen , xlab="Eigenvector Centrality", prob=TRUE) 
-  
-  gplot(gs.sn, vertex.cex=gs.v$eigen*10, gmode="digraph") 
-  
-  ###########################
-  #   POSITIONAL ANALYSIS   #
-  ###########################
-  
-  #Burt's (1992) measures of structural holes are supported by iGraph and ego network variants of these measures are supported by egonet
-  #...the egonet package is compatable with the sna package.
-  
-  #You can find descriptions and code to run Burt's measures in igraph at: http://igraph.org/r/doc/constraint.html
-  
-  #Brokerage: The brokerage measure included in the SNA package builds on past work on borkerage (Marsden 1982), but is a more 
-  #...explicitly group oriented measure. Unlike Burt's (1992) measure, the Gould-Fernandez measure requires specifying a group variable
-  #...based on an attribute. I use race in the example below.
-  
-  #Brokerage Roles: Group-Based Concept
-  #w_I: Coordinator Role (Mediates Within Group Contact)
-  #w_O: Itinerant Broker Role (Mediates Contact between Individuals in a group to which the actor does not belong)
-  #b_{IO}: Representative: (Mediates incoming contact from out-group members)
-  #b_{OI}: Gatekeeper: (Mediates outgoing contact from in-group members)
-  #b_O: Liason Role: (Mediates contact between individuals of two differnt groups, neither of which the actor belongs)
-  #t: Total or Cumulative Brokerage (Any of the above paths)
-  ?brokerage   #for more information
-  
-  AHS_Brokerage <- brokerage(gs.sn, gs.v$grp1)
-  gs.v = cbind(gs.v, AHS_Brokerage$z.nli)
-  AHS_Brokerage$raw.gli
-  hist(AHS_Brokerage$cl, xlab="Cumulative Brokerage", prob=TRUE) 
-  
-  AHS_CBrokerage <- (AHS_Brokerage$cl)
-  gplot(gs.sn, vertex.cex=AHS_CBrokerage*.5, gmode="digraph") 
-  
-  #Structural Equivalence
-  #Structural equivalence: Similarity/Distance Measures Include:
-  #Correlation
-  #Euclidean Distance
-  #Hamming Distance
-  #Gamma Correlation
-  sedist(gs.sn, mode="digraph", method="correlation")
-  
-  #Cluster based on structural equivalence:
-  AHS_Clustering <- equiv.clust(gs.sn, mode="digraph",plabels=network.vertex.names(gs.sn))
-  AHS_Clustering                        #Specification of the equivalence method used
-  plot(AHS_Clustering)                  #Plot the dendrogram
-  rect.hclust(AHS_Clustering$cluster, h=30)
-  
-  #Generating a Block Model based on the Structural Equivalence Clustering
-  AHS_BM <- blockmodel(gs.sn, AHS_Clustering, h=200)
-  gs.v$clst_block = AHS_BM$block.membership
-  unique(gs.v$clst_block)
-  
-  
-  #Extract the block image for Visualization
-  bimage <- AHS_BM$block.model
-  bimage
-  bimage[is.nan(bimage)] <- 1
-  
-  #Visualizing the block image (with self-reflexive ties)
-  gplot(bimage, diag=TRUE, edge.lwd=bimage*5, vertex.cex=sqrt(table(AHS_BM$block.membership))/2,
-        gmode="graph", vertex.sides=50, vertex.col=gray(1-diag(bimage)))
-  
-  rm(AHS_BM,AHS_Brokerage,AHS_kc,AHS_Cut,AHS_Comp,AHS_Geo,AHS_BM,AHS_CBrokerage,AHS_Clustering,h2o.pred)
 }
+           
 
 #Mutual information steady state Multiple measures parallel
 {
