@@ -1,53 +1,44 @@
-#######################################################################
-#        CICT for Single Cell RNA Seq pipeline
-#        Abbas Shojaee, 2016-2022
-#        All rights reserved. Please do not use, reuse or distribute in any form
-#        The code is provided only for use at Huang Lab for GRN Analysis at NYU https://huanglab.rbind.io/
-########################################################################
-
-
 #Set working directory and paths
+
+
+
+
 recalcSimMatrices=T
 url.base = "/scratch/as15096/eric"
 setwd(url.base)
 
 #TODO source all libraries and functions and set up working director
-source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
-
-args.cmnd = c('config_SERGIO_DS4.yaml','runCICT','FALSE') #runCICT_par  #runCICT_par
-
-
-args.cmnd <- commandArgs(trailingOnly = T)
-
-if(length(args.cmnd)<2 ){
-  print('Please provide [config file name e.g. config_L0.yaml] [calcEdges|runCICT|runCICT_par] [FALSE|TRUE]') 
-  return(-1)
-} 
-
-configFile <- args.cmnd[1]
-operation<-args.cmnd[2]
-forceOutput<- as.logical(args.cmnd[3])
-if(is.na(forceOutput)) forceOutput = FALSE
-arg.experiment <- args.cmnd[4]
-
-if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par')){
+  source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
+  
+  args.cmnd = c('config_SERGIO_DS4.yaml','runCICT_par','FALSE') #runCICT_par  #runCICT_par
+  
+  args.cmnd <- commandArgs(trailingOnly = T)
+  
+  if(length(args.cmnd)<2 ){
+    print('Please provide [config file name e.g. config_L0.yaml] [calcEdges|runCICT|runCICT_par] [FALSE|TRUE]') 
+    return(-1)
+  } 
+  
+  configFile <- args.cmnd[1]
+  operation<-args.cmnd[2]
+  forceOutput<- as.logical(args.cmnd[3])
+  if(is.na(forceOutput)) forceOutput = FALSE
+  arg.experiment <- args.cmnd[4]
+  
+if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','install')){
   print('Invalid operation requested')
   return(-1)
 } else print(sprintf("Operation: %s, Config: %s, forceOutputReplace: %s", 
                      configFile,operation , forceOutput))
 
-# write.table(toString(args), 'test results', sep = ",", quote = FALSE, row.names = FALSE)
-# return()
 
-#Calculate raw edges
-
-#data/inputs/L1/DREAM5_4/CICT/ExpressionData.csv data/outputs/L1/DREAM5_4/CICT/outFile.txt
 library(yaml)
 args = read_yaml(paste0(url.base,'/config-files/',configFile)) #config_L0.yaml
 inputslocation ="inputs_beeline2" # "inputs"
 
 
 arg.dname='hHep'
+
 ds = args$input_settings$datasets %>% rbindlist() 
 databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
 #databases = c('dream5_1','dream5_3','dream5_4','mDC','mHSC-E','mESC','hESC','hHEP')
@@ -81,7 +72,6 @@ databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
     rcrd=list()
     rcrd$outputAlreadyPresent=F
     
-    url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
     #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
     if(!is.na(arg.experiment)) url.output=paste0(url.output,'/',arg.experiment) 
     
@@ -141,7 +131,11 @@ databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
       )
       
       
-    } else {rm(similarityMatrices);arg.edgeTypes.existing = c()}
+    } else {
+      rm(similarityMatrices);
+      arg.edgeTypes.existing = c()
+      return(list())
+      }
     
     if( (!file.exists(url.rankedEdges) | !file.exists(url.rankedEdgesGated)) | forceOutput) {
       #try({   
@@ -158,10 +152,16 @@ databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
   }
   
   
-}  
-
-
+} 
 #Parallel run
+if(operation=='install'){
+  install.packages('future.batchtools')
+  install.packages('batchtools')
+  install.packages("future")
+  install.packages("listenv")
+  return()
+}
+
 if(operation=='runCICT_par'){
   
   cict.wrapper = function(data, job, instance,outputSubFolder='',
@@ -237,7 +237,7 @@ if(operation=='runCICT_par'){
   if(F){
     tmp.datasetnames = "hHep"
     tmp.arg.edgeTypes = "ewMImm"
-    tmp=cict.wrapper(prd2[1,],job=NULL, instance=NULL,
+    tmp=cict.wrapper(prd2[32,],job=NULL, instance=NULL,
                      outputSubFolder = 'cict_par',
                      earlyThresholdForGraphAnalysis,
                      minGroundTruth.ratio.learning,
@@ -270,8 +270,9 @@ if(operation=='runCICT_par'){
       
       records = list()
       
-      configFiles = list.files(paste0(url.base,'/config-files/'), pattern = 'L0*.*yaml')
-      configFiles = 'config_SERGIO_DS4.yaml' ;cnfg=configFiles
+      configFiles = list.files(paste0(url.base,'/config-files/'), pattern = 'L0.*yaml')
+      configFiles=configFiles[1]
+      #configFiles = 'config_SERGIO_DS4.yaml' ;cnfg=configFiles
       
       #datasetnames = NULL, # c('mDC','mHSC-E','mESC','hESC','hHEP'),
       #edgeTypes = c('Pearson','ewMImm' ),#'Euclidean','ewMIempirical',
@@ -279,23 +280,26 @@ if(operation=='runCICT_par'){
       #problemDeisgns = list()
       prd2 = data.frame()
       
+      runs=1 
       for(cnfg in configFiles ){
-        runs=1                
+                       
         cnfg.url = paste0(url.base,'/config-files/',cnfg)
         args = read_yaml(cnfg.url) #
         
         cictRawEdgeCol =args$input_settings$algorithms[[1]]$params[['edgeTypes']] # comma separated  'Pearson, ewMImm'
         cictRawEdgeCol  = str_split(cictRawEdgeCol,',',simplify = T)  %>% trim() %>% str_subset(pattern=".{2}")
         
-        if(!exists('datasetnames')) datasetnames = rbindlist(args$input_settings$datasets) %>% pull('name')
+        datasetnames = rbindlist(args$input_settings$datasets) %>% pull('name')
         
+        #Temporary, removing dream data from datasets
+        datasetnames = str_subset(datasetnames,'dream',negate = T) 
         
         prd1 = purrr::cross(list(runs,cictRawEdgeCol,datasetnames))
         prd1 = rbindlist(prd1)
         colnames(prd1)<- c('runs','cictRawEdgeCol','dataset')
         
         prd1 = prd1 %>% mutate(
-          dataFolder= args$input_settings$dataset_dir[[1]]
+          dataFolder= args$input_settings$dataset_dir[[1]],
           configFile = cnfg.url
         ) %>% mutate(
           jobDesc = paste0(dataset,'_',cictRawEdgeCol,'_',runs)
@@ -307,9 +311,12 @@ if(operation=='runCICT_par'){
         #problemDeisgns = append(problemDeisgns,cnfg)
       }
       
+      
+      
       for(idx in 1:nrow(prd2)) 
         addProblem(name = paste0("_", idx), data = prd2[idx,] , fun = NULL, seed = 42) #Feed config file to data
       
+      prd2$jobDesc
       #addAlgorithm(name = 'calcEdges', fun = NULL)
       addAlgorithm(name = 'runCICT', fun = cict.wrapper)
       #addAlgorithm(name = 'runOtherAlgos', fun = NULL) #AWE, ARACNE ...
@@ -339,13 +346,13 @@ if(operation=='runCICT_par'){
     plan(list(
       tweak(batchtools_slurm, 
             resources = list( ntasks = 20,
-                              cpu_per_task=12,
-                              memory_per_cpu = "100gb"#vmem = "5gb"
+                              cpu_per_task=6,
+                              memory_per_cpu = "150gb"#vmem = "5gb"
             )),
       multisession
     ))
     
-    submitJobs()
+    system.time({ submitJobs() })
     ## Submitting 90 jobs in 90 chunks using cluster functions 'Interactive' ...
     waitForJobs()
     
@@ -357,13 +364,15 @@ if(operation=='runCICT_par'){
     
     
     job.inf = unwrap(getJobPars())
-    job.res=(getJobResources())
+    job.res=(getJobResources(results$job.id, reg))
+    job.cost = batchtools::getJobStatus()
+    a=batchtools::getLog(id=1)
     
     results.all = cbind(job.inf,job.res,results)
     
     url.output = paste0("/scratch/as15096/eric",'/outputs/','cict_par')
     dir.create(url.output, recursive = T)
-    url.cluster.results = paste0(url.output,'/clusterResults ', '.rds')
+    url.cluster.results = paste0(url.output,'/clusterResults2', '.rds')
     
     saveRDS(results.all,file =url.cluster.results )
     #a=results.all %>% kable(format='html')
@@ -372,21 +381,22 @@ if(operation=='runCICT_par'){
     
     
     
-    library(tableHTML)
-    tableHTML(results.all)
-    #browseURL(rmarkdown::render(input = "view_template.Rmd", params = list(myinput = iris)))
+    # library(tableHTML)
+    # tableHTML(results.all)
+    # #browseURL(rmarkdown::render(input = "view_template.Rmd", params = list(myinput = iris)))
+    # 
+    # 
+    # tab = ijoin(pars, results)
+    # head(tab)
+    # 
+    # unwrap(getJobResources())
+    # 
+    # tab[ratio == 0.67, list(mmce = mean(mce)),
+    #     by = c("algorithm", "kernel", "epsilon", "ntree")]
     
-    
-    tab = ijoin(pars, results)
-    head(tab)
-    
-    unwrap(getJobResources())
-    
-    tab[ratio == 0.67, list(mmce = mean(mce)),
-        by = c("algorithm", "kernel", "epsilon", "ntree")]
-    
-  }
-}  else for(idx in 1:length(databases)) { #arg.dname in databases){
+  
+  }else for(idx in 1:length(databases)) 
+    { #arg.dname in databases){
   #arg.dname <- args$input_settings$datasets[[1]][['name']]
   #JUST TESTING, REMOVETHIS
   #idx=2
@@ -448,11 +458,12 @@ if(operation=='runCICT_par'){
       }
       
       
-      arg.edgeTypes.lst = str_trim(unlist(str_split(arg.edgeTypes,',')))
+      arg.edgeTypes.lst = str_split(arg.edgeTypes,',') %>% unlist() %>% str_subset('.{2}') %>% trim()
       arg.edgeTypes.abs = arg.edgeTypes.lst[which(! arg.edgeTypes.lst %in% arg.edgeTypes.existing)]
       
       
       #produce raw edges
+      rm(similarityMatrices.new)
       source('Algorithms/CICT/requirements/calculateRawEdges.R')
       if(length(arg.edgeTypes.abs) > 0 ){
         similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =8)
@@ -592,3 +603,8 @@ if(operation=='runCICT_par'){
     
   })
 }
+
+
+
+
+
