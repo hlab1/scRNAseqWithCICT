@@ -6,15 +6,16 @@ This repository contains code to run the CICT (Causal Inference Causality Test) 
     Initial setup and configuration
     Execution of the CICT algorithm
 
-Getting Started
+## Getting Started
 
 Before running the CICT algorithm, you need to set up your working environment and specify the paths for input and output files.
-Step 1: Set working directory and paths
+
+##### Step 1: Set working directory and paths
 
     Set the working directory by modifying the url.base variable to point to the base directory where the input files and folders are located.
     Set the paths for input files, ground truth files, and output folders by modifying the corresponding variables in the code.
 
-Step 2: Load required libraries and functions
+##### Step 2: Load required libraries and functions
 
     Source the required libraries and functions by running the following line:
 
@@ -22,7 +23,7 @@ R
 
 source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
 
-Step 3: Configure the CICT algorithm
+#####Step 3: Configure the CICT algorithm
 
     The args.cmnd variable contains the command line arguments for the CICT algorithm. It should be in the following format:
 
