@@ -1,3 +1,15 @@
+################################################################################@
+# © 2016 Abbas Shojaee <abbas.shojaee@gmail.com>
+# Causal Inference Using Composition of Transactions CICT
+# All rights reserved, please do not use, modify or distribute without written permission
+################################################################################@
+
+################################################################################@
+# © 2021 Abbas Shojaee <abbas.shojaee@gmail.com> - Carol Huang Lab, NYU
+# Causal Inference Using Composition of Transactions CICT
+# All rights reserved, please do not use, modify or distribute without written permission
+################################################################################@
+
 #Set working directory and paths
 
 
@@ -187,7 +199,126 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
     
   }
   
+  
 } 
+
+{
+  
+  #' Calculates associationg measures from gene expression profiles
+  #' please provide either of the three set of values:  
+  #'     1- url.input and url.rawedgefile. Then other argument are not necessary. Suitable if you want to provide information directly 
+  #'     2-configFilePath. Then the algorithm would extract all necessary information from config file. Suitable when you want to run on many folders using configuration files
+  #'     
+  #' @param url.input is the path to raw gene expression data. Genes represented as rows and cells or buld evaluations consist columns
+  #' @param url.rawedgefile the path to output file for rawedge calculations. 
+  #' @param configFilePath the Path to YAML config file containing the required information about input file and desired edge types 
+  #' @param url.base is the base url will be used to concatenate the input and output folder using information provided in config file
+  #' @param arg.edgeTypes a comma seperated string of desired gene-gene association measures to calculate. Please consider that Kendall distance takes considerable time to calculate. Example: arg.edgeTypes='Pearson,ewMImm,ewMIempirical,ewMIshrink ,efMIempirical ,Kendall,Spearman,Euclidean,L10NormManhattan,Granger'
+  #' @return Returns a list consisted of three objects 
+  #' # rcrd: is a list object of intermediary objects
+  #' # edges: a dataframe of edge objects and CICT features for edges
+  #' # Vertices: a dataframe of vertices objects and CICT features for vertices
+  #' @examples
+  #' # Example usage of the function
+  #' c(rcrd,edges,vertices) %<-z% prepareEdgeFeatures(Debug=Debug)
+  #' @export
+  #' 
+  calcEdges<- function(url.input = NA,
+                       url.rawedgefile = NA,
+                       outputToCICTsubfolder = T,
+                       url.base = NA,
+                       configFilePath = NA,
+                       arg.experimentSeries=NA,
+                       arg.edgeTypes ="Pearson",
+                       url.name.map=NA,
+                       recalcSimMatrices = T,
+                       url.RawEdgeCalculationModule = 'Algorithms/CICT/requirements/calculateRawEdges.R',
+                       url.logfile = NA
+                       )
+  {
+    #Only takes two arguments one for config file and one for operation
+    library(yaml)
+    
+    
+    if(!is.na(configFilePath ) & !is.na(url.base)){
+      cnf = read_yaml(configFilePath) 
+      arg.dname <- cnf$datasets[[1]]$name  #
+      #cictRawEdgeCol<-cnf$CICT$edgeType
+      arg.edgeTypes= cnf$calcEdges$edgeTypes
+      arg.inputsdir <-  cnf$input_dir
+      arg.dataFolder <- cnf$dataset_dir
+      arg.inFile <- cnf$datasets[[1]]$exprData
+      arg.pseudoTime <-  cnf$datasets[[1]]$cellData
+      arg.gtFile <-  cnf$datasets[[1]]$trueEdges
+      url.inputFolder = paste0(url.base,'/',arg.inputsdir,'/',arg.dataFolder,'/',arg.dname ,'/')
+      if(!dir.exists(url.inputFolder)) dir.create(url.inputFolder,recursive = T)
+    }
+    else{
+      if(is.na(url.input) |
+         is.na(url.rawedgefile) ){
+           
+           stop("Either configFilePath and url.base should be provided or the arguments: url.input,url.rawedgefile")
+         }
+    }
+    
+    if(outputToCICTsubfolder) url.inputFolder=paste0(url.inputFolder,'/CICT/')
+    #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
+    if(!is.na(arg.experimentSeries)) url.inputFolder=paste0(url.inputFolder,arg.experimentSeries,'/') 
+    
+    if(is.na(url.input)) url.input = paste0(url.inputFolder, arg.inFile)
+    if(is.na(url.rawedgefile)) url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv') 
+    
+    if(is.na(url.name.map)) url.name.map = paste0(url.inputFolder,'name_map.csv')
+    if(is.na(url.logfile)) url.logfile = paste0(url.inputFolder ,arg.dname,'_cict log.txt')
+    
+    rm(cnf)
+    
+    write('Start',  file = url.logfile, append = F)
+    
+    msg = c("Operation: Calculating raw edges =====" )
+    cat(msg)
+    write(msg,file = url.logfile, append = TRUE)
+    
+    #**************************************************************
+    
+    if(file.exists(url.rawedgefile) & !recalcSimMatrices)
+    {
+      print(paste0("RawEdge file exist and overwriting not enforced. Exiting. ", url.rawedgefile))
+      
+      similarityMatrices = fread(file= url.rawedgefile)
+      arg.edgeTypes.existing = colnames(similarityMatrices)
+      next
+    } else {
+      try({file.remove(url.rawedgefile)},silent=T)
+      rm(similarityMatrices);arg.edgeTypes.existing = c()
+    }
+
+    arg.edgeTypes.lst = str_split(arg.edgeTypes,',') %>% unlist() %>% str_subset('.{2}') %>% trim()
+    arg.edgeTypes.abs = arg.edgeTypes.lst[which(! arg.edgeTypes.lst %in% arg.edgeTypes.existing)]
+    n.parallel.workers = length(arg.edgeTypes.abs)
+    
+    #produce raw edges
+    rm(similarityMatrices.new)
+    source(url.RawEdgeCalculationModule)
+    if(length(arg.edgeTypes.abs) > 0 ){
+      similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =n.parallel.workers)
+      
+      if(exists('similarityMatrices') & nrow(similarityMatrices.new)>0 ) 
+      {  
+        
+        similarityMatrices = 
+          similarityMatrices %>% select(-colnames(similarityMatrices.new),src ,trgt) %>%
+          merge(similarityMatrices.new,all=T,by=c('src','trgt')) 
+      }else similarityMatrices = similarityMatrices.new
+      
+      try({write.table(similarityMatrices, url.rawedgefile, sep = ",", quote = FALSE, row.names = FALSE)})
+      print(sprintf('%s, %s raw edge calculations (%s) finished. %s', 
+                    arg.dataFolder, arg.dname, paste0(arg.edgeTypes.lst,collapse = ', ') ,Sys.time()))
+    }
+    
+ 
+  }
+}
 #Parallel run
 
 
@@ -450,68 +581,7 @@ if(operation=='config_par'){
   }
 }else
   if(operation=='calcEdges_par'){
-    
-    #Only takes two arguments one for config file and one for operation
-    library(yaml)
-    #configFilePath = "/scratch/as15096/eric/outputs/cict_par/calcEdgesConfs/parConf_3.yaml"
-    rm(cnf)
-    cnf = read_yaml(configFilePath) 
-    
-    arg.dname <- cnf$datasets[[1]]$name  #
-    #cictRawEdgeCol<-cnf$CICT$edgeType
-    arg.edgeTypes= cnf$calcEdges$edgeTypes
-    #Reading other information that does not affect scaling, from the config file, 
-    # allows less complex code and customizability without code modification
-    arg.inputsdir <-  cnf$input_dir
-    arg.dataFolder <- cnf$dataset_dir
-    
-    
-    arg.inFile <- cnf$datasets[[1]]$exprData
-    arg.pseudoTime <-  cnf$datasets[[1]]$cellData
-    arg.gtFile <-  cnf$datasets[[1]]$trueEdges
-    
-    url.inputFolder = paste0("/scratch/as15096/eric",'/',cnf$input_dir,'/',cnf$dataset_dir,'/',cnf$datasets[[1]]$name ,'/')
-    #url.output - url.inputFolder
-    #url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
-    
-    url.input = paste0(url.inputFolder, arg.inFile)
-    url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
-    
-    url.name.map = paste0(url.inputFolder,'name_map.csv')
-    
-    
-    #**************************************************************
-    
-    print('Operation: Calculating raw edges ===========')
-    
-    try({file.remove(url.rawedgefile)},silent=T)
-    rm(similarityMatrices);arg.edgeTypes.existing = c()
-    
-    arg.edgeTypes.lst = str_split(arg.edgeTypes,',') %>% unlist() %>% str_subset('.{2}') %>% trim()
-    arg.edgeTypes.abs = arg.edgeTypes.lst[which(! arg.edgeTypes.lst %in% arg.edgeTypes.existing)]
-    
-    
-    #produce raw edges
-    rm(similarityMatrices.new)
-    source('Algorithms/CICT/requirements/calculateRawEdges.R')
-    if(length(arg.edgeTypes.abs) > 0 ){
-      similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =10)
-      
-      if(exists('similarityMatrices') & nrow(similarityMatrices.new)>0 ) 
-      {  
-        
-        similarityMatrices = 
-          similarityMatrices %>% select(-colnames(similarityMatrices.new),src ,trgt) %>%
-          merge(similarityMatrices.new,all=T,by=c('src','trgt')) 
-      }else similarityMatrices = similarityMatrices.new
-      
-      try({write.table(similarityMatrices, url.rawedgefile, sep = ",", quote = FALSE, row.names = FALSE)})
-      print(sprintf('%s, %s raw edge calculations (%s) finished. %s', 
-                    arg.dataFolder, arg.dname, paste0(arg.edgeTypes.lst,collapse = ', ') ,Sys.time()))
-    }
-    
-    
-    
+      calcEdges(url.base = "/scratch/as15096/eric",configFilePath=configFilePath)
   }else 
     if(operation=='runCICT_par'){
       print('step 003')
@@ -631,7 +701,7 @@ if(operation=='config_par'){
         
         url.output = paste0("/scratch/as15096/eric",'/outputs/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
         dir.create(url.output,recursive = T)
-        
+
         # supervised.positiveClass <- args[5] # c:causal edges, 'c,rc': causal and reversecausal
         # supervised.negativeClass<- args[6]  # r:random edges, 'rc': reversecausal  
         # supervised.gtProp<- args[7] #proportion of GT used for classification
@@ -646,69 +716,16 @@ if(operation=='config_par'){
           # Calculate raw edges
           if(operation=='calcEdges'){
             #data/inputs/L1/DREAM5_1/CICT/ExpressionData.csv data/outputs/L1/DREAM5_1/CICT/outFile.txt
-            #TODO check if raw edges are not ready prepare it
-            recalcSimMatrices=forceOutput
-            
-            url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
-            #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
-            if(!is.na(arg.experiment)) url.output=paste0(url.output,'/',arg.experiment) 
-            
-            if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-            url.logfile = paste0(url.output , '/',arg.dname,'_cict log.txt')
-            write('Start',  file = url.logfile, append = F)
-            
-            msg = c("Calculating raw edges =====" )
-            cat(msg)
-            write(msg,file = url.logfile, append = TRUE)
-            
-            print('Operation: Calculating raw edges ===========')
-            
+            calcEdges(url.input=url.input,
+                      url.rawedgefile=url.rawedgefile,
+                      arg.experimentSeries=arg.experiment,
+                      recalcSimMatrices=forceOutput)
 
-            if(file.exists(url.rawedgefile) & !recalcSimMatrices)
-            {
-              print(paste0("RawEdge file exist and overwriting not enforced. Exiting. ", url.rawedgefile))
-              
-              similarityMatrices = fread(file= url.rawedgefile)
-              arg.edgeTypes.existing = colnames(similarityMatrices)
-              next
-            } else {
-              try({file.remove(url.rawedgefile)},silent=T)
-              rm(similarityMatrices);arg.edgeTypes.existing = c()
-            }
-            
-            
-            
-            arg.edgeTypes.lst = str_split(arg.edgeTypes,',') %>% unlist() %>% str_subset('.{2}') %>% trim()
-            arg.edgeTypes.abs = arg.edgeTypes.lst[which(! arg.edgeTypes.lst %in% arg.edgeTypes.existing)]
-            
-            
-            #produce raw edges
-            rm(similarityMatrices.new)
-            source('Algorithms/CICT/requirements/calculateRawEdges.R')
-            if(length(arg.edgeTypes.abs) > 0 ){
-              similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =10)
-              
-              if(exists('similarityMatrices') & nrow(similarityMatrices.new)>0 ) 
-              {  
-                
-                similarityMatrices = 
-                  similarityMatrices %>% select(-colnames(similarityMatrices.new),src ,trgt) %>%
-                  merge(similarityMatrices.new,all=T,by=c('src','trgt')) 
-              }else similarityMatrices = similarityMatrices.new
-              
-              try({write.table(similarityMatrices, url.rawedgefile, sep = ",", quote = FALSE, row.names = FALSE)})
-              try({write.table(similarityMatrices, paste0(url.output,'/rawEdges.csv'), sep = ",", quote = FALSE, row.names = FALSE)})
-              print(sprintf('%s raw edge calculations (%s) finished. %s', 
-                            arg.dname, paste0(arg.edgeTypes.lst,collapse = ', ') ,Sys.time()))
-            }
-            
           }
           
           # Run CICT Predict all edges
           if(operation=='runCICT'){
             #data/inputs/L1/DREAM5_1/CICT/ExpressionData.csv data/outputs/L1/DREAM5_1/CICT/outFile.txt
-            #TODO check if raw edges are not ready prepare it
-            #
             options(knitr.table.format = "pipe")
             #CICT parameter setting
             {
