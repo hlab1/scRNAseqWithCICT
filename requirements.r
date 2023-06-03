@@ -1,5 +1,10 @@
 # requirements.r
 
+install.packages("BiocManager")
+BiocManager::install("minet")
+BiocManager::install('RCy3')
+BiocManager::install(c('impute', 'preprocessCore', 'GO.db', 'AnnotationDbi'))
+
 install.packages(c(
   "caret",
   "Rtsne",
@@ -11,7 +16,6 @@ install.packages(c(
   "infotheo",
   "mpmi",
   "stringr",
-  "RCy3",
   "igraph",
   "data.table",
   "plyr",
@@ -28,7 +32,14 @@ install.packages(c(
   "tidygraph",
   "graphlayouts",
   "statnet",
-  "knitr"
+  "knitr",
+  "arules",
+  "doFuture",
+  "here",
+  "GGally",
+  "doParallel",
+  "doSNOW",
+  "WGCNA"
 ))
 
 # Alias functions
