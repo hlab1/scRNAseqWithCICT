@@ -1,5 +1,6 @@
 # requirements.r
 
+# BioConductor
 install.packages("BiocManager")
 BiocManager::install("minet")
 BiocManager::install('RCy3')
@@ -39,8 +40,20 @@ install.packages(c(
   "GGally",
   "doParallel",
   "doSNOW",
-  "WGCNA"
+  "WGCNA",
+  "precrec"
 ))
+
+# h2o
+if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
+if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
+pkgs <- c("RCurl","jsonlite")
+for (pkg in pkgs) {
+    if (! (pkg %in% rownames(installed.packages()))) { install.packages(pkg) }
+}
+install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/latest_stable_R")))
+
+
 
 # Alias functions
 select <- dplyr::select
