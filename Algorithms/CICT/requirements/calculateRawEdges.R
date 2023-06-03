@@ -61,8 +61,8 @@ nParallelThreads = 12
     #If has more cores available then the number of simulations, let them be used on parallelizing subprocesses
     n.workers.subprocess = min(n.workers,length(sims))
     
-    similarityMatrices <- sapply(
-    #similarityMatrices <- parSapply(processingCluster,
+    #similarityMatrices <- sapply(
+    similarityMatrices <- parSapply(processingCluster,
       sims, simplify = FALSE, USE.NAMES = TRUE,
       FUN= function(sim, actualDataset, actualDatasetNNodes, actualDatasetNObservations,
                     actualDatasetName, actualDatasetSymbolicPatterns, patterns, numCores)
@@ -147,8 +147,7 @@ nParallelThreads = 12
       if(nrow(tmp)==0) next
       
       ncol(tmp);nrow(tmp)
-      print(rownames(tmp)[1:5])
-      if(all(  rownames(tmp) %>%as.numeric() %>% is.numeric())){
+      if(all(!  rownames(tmp) %>%as.numeric() %>% is.na())){
           colnames(tmp) = rownames(actualDataset)
           rownames(tmp) = rownames(actualDataset)
           tmp =tmp %>% mutate(src =rownames(actualDataset)  ) %>% select(src,everything())
