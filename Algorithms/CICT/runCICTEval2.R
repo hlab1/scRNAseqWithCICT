@@ -107,7 +107,7 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
     if(!is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
     
     if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-    if(url.logfile=='') url.logfile = file.path(url.output , paste0(arg.dname,'_cict log.txt'))
+    if(url.logfile=='') url.logfile = file.path(url.output , paste0(arg.dname,'_cict_log.txt'))
     write('Start',  file = url.logfile, append = F)
     
     
@@ -187,6 +187,8 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
   
     
     print(url.rankedEdges)
+    print(url.rankedEdgesGated)
+    print(forceOutput)
     if( (!file.exists(url.rankedEdges) | !file.exists(url.rankedEdgesGated)) | forceOutput) {
       #try({   
       
@@ -684,7 +686,8 @@ if(operation=='config_par'){
         #STEP 1  reads the mother config file *******************
         cnfyaml = read_yaml(configFilePath) #configFilePath='config_L2.yaml'
         #cnfyaml = read_yaml(paste0(url.base,'/config-files_v1/',configFilePath)) #configFilePath='config_L2.yaml'
-        inputslocation ="inputs_beeline2" # "inputs"
+        inputslocation = here::here(cnfyaml$input_settings$input_dir)
+        #inputslocation ="inputs_beeline2" # "inputs"
         ds = cnfyaml$input_settings$datasets %>% rbindlist() 
         databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
         #databases='hHep'
@@ -700,7 +703,7 @@ if(operation=='config_par'){
           arg.gtFile <-  cnfyaml$input_settings$datasets[[idx]][['trueEdges']] #ground truth
           arg.edgeTypes <- cnfyaml$input_settings$algorithms[[1]]$params[['edgeTypes']] # comma separated  'Pearson, ewMImm'
           
-          url.inputbase = here::here(inputslocation,arg.dataFolder)
+          url.inputbase = file.path(inputslocation,arg.dataFolder)
           #url.inputbase = paste0("/scratch/as15096/eric",'/',inputslocation,'/',arg.dataFolder)
           url.inputFolder = file.path(url.inputbase ,arg.dname) #,'/CICT')
           #url.inputFolder = paste0(url.inputbase ,'/',arg.dname) #,'/CICT')
@@ -714,8 +717,7 @@ if(operation=='config_par'){
           url.name.map = file.path(url.inputbase,arg.dname,'name_map.csv')
           #url.name.map = paste0(url.inputbase,'/',arg.dname,'/','name_map.csv')
           
-          url.output = here::here('outputs_v2',arg.dataFolder,arg.dname)
-          print(url.output)
+          url.output = here::here(cnfyaml$output_settings$output_dir,arg.dataFolder,arg.dname)
           #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
           if (!file.exists(url.output)) dir.create(url.output,recursive = T)
           
@@ -736,13 +738,13 @@ if(operation=='config_par'){
               #TODO check if raw edges are not ready prepare it
               recalcSimMatrices=forceOutput
               
-              url.output = here::here('outputs',arg.dataFolder,arg.dname,'CICT' )
+              url.outputFolder =  file.path(url.output ,'CICT') 
               #url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
               #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
               if(exists("arg.experiment") && !is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
               
-              if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-              url.logfile = file.path(url.output ,paste0(arg.dname,'_cict log.txt'))
+              if(!dir.exists(url.outputFolder)) dir.create(url.output,recursive = T)
+              url.logfile = file.path(url.outputFolder ,paste0(arg.dname,'_calcedges_log.txt'))
               write('Start',  file = url.logfile, append = F)
               
               msg = c("Calculating raw edges =====" )
@@ -820,7 +822,7 @@ if(operation=='config_par'){
               if(theJobID !='') theJobID.tmp = paste0(theJobID,'_') else theJobID.tmp=''
               url.outputFolder =  file.path(url.output ,'CICT',theJobID.tmp) 
               #url.outputFolder =  paste0(url.output ,'/CICT/',theJobID.tmp) 
-              dir.create(url.outputFolder,recursive = T)
+              if (!file.exists(url.outputFolder)) dir.create(url.outputFolder,recursive = T)
               #url.outputFolder = "/scratch/as15096/eric/outputs/L2_lofgof/mESC/mESC_lofgof_training_sets/2/"
               url.rankedEdges = file.path(url.output ,'CICT',paste0(theJobID.tmp, 'rankedEdges.csv'))
               #url.rankedEdges = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdges.csv')
@@ -829,7 +831,7 @@ if(operation=='config_par'){
               
               
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-              url.logfile = paste0(url.output , '/',arg.dname,'_cict log.txt')
+              url.logfile = file.path(url.output , paste0(arg.dname,'_run_log.txt'))
               write('Start',  file = url.logfile, append = F)
               
               
@@ -959,7 +961,7 @@ if(operation=='config_par'){
               if(!is.na(arg.experiment)) url.output=paste0(url.outputFolder,arg.experiment) 
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
               
-              url.logfile = file.path(url.output , paste0(arg.dname,'_supervised log.txt'))
+              url.logfile = file.path(url.output , paste0(arg.dname,'_supervised_log.txt'))
               #url.logfile = paste0(url.output , '/',arg.dname,'_supervised log.txt')
               write('Start',  file = url.logfile, append = F)
               
