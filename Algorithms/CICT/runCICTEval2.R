@@ -104,10 +104,10 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
     
     if(is.null(earlyThresholdForGraphAnalysis))earlyThresholdForGraphAnalysis=0
     #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
-    if(!is.na(arg.experiment)) url.output=paste0(url.output,'/',arg.experiment) 
+    if(!is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
     
     if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-    if(url.logfile=='') url.logfile = paste0(url.output , '/',arg.dname,'_cict log.txt')
+    if(url.logfile=='') url.logfile = file.path(url.output , paste0(arg.dname,'_cict log.txt'))
     write('Start',  file = url.logfile, append = F)
     
     
@@ -184,12 +184,13 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
         genes.included = c(genes.gtsmpl,genes.sampled)
         n.itm.e = n.itm.e %>% filter(src %in% genes.included & trgt %in% genes.included)
       }
+  
     
-    
+    print(url.rankedEdges)
     if( (!file.exists(url.rankedEdges) | !file.exists(url.rankedEdgesGated)) | forceOutput) {
       #try({   
       
-      source('Algorithms/CICT/CICT.R',local=TRUE)
+      source(here::here('Algorithms','CICT','CICT.R'),local=TRUE)
       
       c(rcrd,edges,vertices) %<-z% prepareEdgeFeatures(Debug=Debug)
       rcrd = cictTrainTestReport(edges,rcrd,Debug=Debug,preset.train=preset.train, preset.test=preset.test)
@@ -249,7 +250,7 @@ if(operation=='config_par'){
     
     
     theExperimentName = "sens_modeling_choices"   #"sens_edgeType" # "sens_multipleRuns"  #"cict_scaling" # "sens_sparsity" # 'calcEdgesConfs'  # 
-    jobConfigBase.url = paste0(url.base,'/outputs_v2/cict_par/',theExperimentName,'/')
+    jobConfigBase.url = file.path(url.base,'outputs_v2','cict_par',theExperimentName)
     if(!dir.exists(jobConfigBase.url)) dir.create(jobConfigBase.url,recursive = T)
     addToExperiment=F  #Add new config files to experiment directory or start anew
     
@@ -679,8 +680,9 @@ if(operation=='config_par'){
         library(yaml)
         #cnfyaml = read_yaml('/scratch/as15096/eric/outputs/cict_par/sens_modeling_choices/parConf_1.yaml')
         
+          print(configFilePath)
         #STEP 1  reads the mother config file *******************
-        cnfyaml = read_yaml(file.path(url.base,'config-files_v1',configFilePath)) #configFilePath='config_L2.yaml'
+        cnfyaml = read_yaml(configFilePath) #configFilePath='config_L2.yaml'
         #cnfyaml = read_yaml(paste0(url.base,'/config-files_v1/',configFilePath)) #configFilePath='config_L2.yaml'
         inputslocation ="inputs_beeline2" # "inputs"
         ds = cnfyaml$input_settings$datasets %>% rbindlist() 
@@ -698,7 +700,7 @@ if(operation=='config_par'){
           arg.gtFile <-  cnfyaml$input_settings$datasets[[idx]][['trueEdges']] #ground truth
           arg.edgeTypes <- cnfyaml$input_settings$algorithms[[1]]$params[['edgeTypes']] # comma separated  'Pearson, ewMImm'
           
-          url.inputbase = here:here(inputslocation,arg.dataFolder)
+          url.inputbase = here::here(inputslocation,arg.dataFolder)
           #url.inputbase = paste0("/scratch/as15096/eric",'/',inputslocation,'/',arg.dataFolder)
           url.inputFolder = file.path(url.inputbase ,arg.dname) #,'/CICT')
           #url.inputFolder = paste0(url.inputbase ,'/',arg.dname) #,'/CICT')
@@ -712,9 +714,10 @@ if(operation=='config_par'){
           url.name.map = file.path(url.inputbase,arg.dname,'name_map.csv')
           #url.name.map = paste0(url.inputbase,'/',arg.dname,'/','name_map.csv')
           
-          url.output = here::here('ouputs_v2',arg.dataFolder,arg.dname)
+          url.output = here::here('outputs_v2',arg.dataFolder,arg.dname)
+          print(url.output)
           #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
-          dir.create(url.output,recursive = T)
+          if (!file.exists(url.output)) dir.create(url.output,recursive = T)
           
           # supervised.positiveClass <- args[5] # c:causal edges, 'c,rc': causal and reversecausal
           # supervised.negativeClass<- args[6]  # r:random edges, 'rc': reversecausal  
@@ -736,10 +739,10 @@ if(operation=='config_par'){
               url.output = here::here('outputs',arg.dataFolder,arg.dname,'CICT' )
               #url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
               #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
-              if(!is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
+              if(exists("arg.experiment") && !is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
               
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-              url.logfile = file.path(url.output ,arg.dname,'_cict log.txt')
+              url.logfile = file.path(url.output ,paste0(arg.dname,'_cict log.txt'))
               write('Start',  file = url.logfile, append = F)
               
               msg = c("Calculating raw edges =====" )
@@ -819,7 +822,7 @@ if(operation=='config_par'){
               #url.outputFolder =  paste0(url.output ,'/CICT/',theJobID.tmp) 
               dir.create(url.outputFolder,recursive = T)
               #url.outputFolder = "/scratch/as15096/eric/outputs/L2_lofgof/mESC/mESC_lofgof_training_sets/2/"
-              url.rankedEdges = file.path(url.output ,'CICT',paset0(theJobID.tmp, 'rankedEdges.csv'))
+              url.rankedEdges = file.path(url.output ,'CICT',paste0(theJobID.tmp, 'rankedEdges.csv'))
               #url.rankedEdges = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdges.csv')
               url.rankedEdgesGated = file.path(url.output ,'CICT',paste0(theJobID.tmp, 'rankedEdgesGated.csv'))
               #url.rankedEdgesGated = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdgesGated.csv')
@@ -863,7 +866,7 @@ if(operation=='config_par'){
                         forceOutput=forceOutput,
                         FLAG_runOnAllEdges =T,
                         FLAG_exportRankedEdges = T,
-                        FLAG_exportTrainAndTest = F,
+                        FLAG_exportTrainAndTest = T,
                         RF_max_depth =10,RF_ntrees=20,
                         preset.train=preset.train, preset.test=preset.test,
                         Debug=5,
