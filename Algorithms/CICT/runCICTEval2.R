@@ -1,5 +1,6 @@
 #Set working directory and paths
 here::i_am('Algorithms/CICT/runCICTEval2.R')
+Sys.setenv(TZ='America/New_York') # this bit fixes warning about timedatectl when loading caret
 
 
 
