@@ -166,7 +166,7 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
       
       
     } else {
-      rm(similarityMatrices);
+      if (exists("similarityMatrices")) rm(similarityMatrices);
       arg.edgeTypes.existing = c()
       return(list())
     }
@@ -508,11 +508,12 @@ if(operation=='config_par'){
   }
 }else
   if(operation=='calcEdges_par'){
+  # calcEdges_par ----
     
     #Only takes two arguments one for config file and one for operation
     library(yaml)
     #configFilePath = "/scratch/as15096/eric/outputs/cict_par/calcEdgesConfs/parConf_3.yaml"
-    rm(cnf)
+    if (exists("cnf")) rm(cnf)
     cnf = read_yaml(configFilePath) 
     
     arg.dname <- cnf$datasets[[1]]$name  #
@@ -537,6 +538,7 @@ if(operation=='config_par'){
     #url.input = paste0(url.inputFolder, arg.inFile)
     url.rawedgefile = file.path(url.inputFolder,'rawEdges.csv')
     #url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
+    print(url.rawedgefile)
     
     url.name.map = file.path(url.inputFolder,'name_map.csv')
     #url.name.map = paste0(url.inputFolder,'name_map.csv')
@@ -547,14 +549,15 @@ if(operation=='config_par'){
     print('Operation: Calculating raw edges ===========')
     
     try({file.remove(url.rawedgefile)},silent=T)
-    rm(similarityMatrices);arg.edgeTypes.existing = c()
+    if(exists("similarityMatrices")) rm(similarityMatrices);
+    arg.edgeTypes.existing = c()
     
     arg.edgeTypes.lst = str_split(arg.edgeTypes,',') %>% unlist() %>% str_subset('.{2}') %>% trim()
     arg.edgeTypes.abs = arg.edgeTypes.lst[which(! arg.edgeTypes.lst %in% arg.edgeTypes.existing)]
     
     
     #produce raw edges
-    rm(similarityMatrices.new)
+    if(exists("similarityMatrices.new")) rm(similarityMatrices.new)
     source(here::here('Algorithms','CICT','requirements','calculateRawEdges.R'))
     if(length(arg.edgeTypes.abs) > 0 ){
       similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =10)
@@ -754,8 +757,9 @@ if(operation=='config_par'){
                 arg.edgeTypes.existing = colnames(similarityMatrices)
                 next
               } else {
-                try({file.remove(url.rawedgefile)},silent=T)
-                rm(similarityMatrices);arg.edgeTypes.existing = c()
+                try({ if (file.exists(url.rawedgefile)) file.remove(url.rawedgefile) },silent=T)
+                if (exists("similarityMatrices")) rm(similarityMatrices);
+                arg.edgeTypes.existing = c()
               }
               
               
@@ -765,7 +769,7 @@ if(operation=='config_par'){
               
               
               #produce raw edges
-              rm(similarityMatrices.new)
+              if (exists("similarityMatrices.new")) rm(similarityMatrices.new)
               source(here::here('Algorithms','CICT','requirements','calculateRawEdges.R'))
               #source('Algorithms/CICT/requirements/calculateRawEdges.R')
               if(length(arg.edgeTypes.abs) > 0 ){
