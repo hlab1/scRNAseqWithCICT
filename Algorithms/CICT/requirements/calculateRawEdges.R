@@ -1,4 +1,4 @@
-
+here::i_am("Algorithms/CICT/requirements/calculateRawEdges.R")
 
 nParallelThreads = 12
 
@@ -9,10 +9,11 @@ nParallelThreads = 12
     print(" - Processing in parallel - ")
     
     
-    source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
+    source(here::here('Algorithms','CICT','requirements','rnR_Framework.R'))
+    #source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
     #s0m3
     library(doParallel);
-    
+    #print(url.data)
     outFolder = dirname (url.data)
     actualDataset <-read.csv(url.data) 
     genecol = str_subset(colnames(actualDataset),'X|^(G|g)ene$')
@@ -52,14 +53,16 @@ nParallelThreads = 12
       clusterEvalQ(processingCluster, library(infotheo));
       clusterEvalQ(processingCluster, library(igraph));
       clusterEvalQ(processingCluster, library(minet));
-      clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
+      clusterEvalQ(processingCluster, here::i_am("Algorithms/CICT/requirements/calculateRawEdges.R"))
+      clusterEvalQ(processingCluster, source(here::here('Algorithms','CICT','requirements','rnR_Framework.R')));
+      #clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
     })
 
     #If has more cores available then the number of simulations, let them be used on parallelizing subprocesses
     n.workers.subprocess = min(n.workers,length(sims))
     
-    #similarityMatrices <- sapply(
-    similarityMatrices <- parSapply(processingCluster,
+    similarityMatrices <- sapply(
+    #similarityMatrices <- parSapply(processingCluster,
       sims, simplify = FALSE, USE.NAMES = TRUE,
       FUN= function(sim, actualDataset, actualDatasetNNodes, actualDatasetNObservations,
                     actualDatasetName, actualDatasetSymbolicPatterns, patterns, numCores)
@@ -130,6 +133,7 @@ nParallelThreads = 12
     
     #Merge similarityMatrices into a data.frame and return it 
     for(i in 1:length(similarityMatrices)){
+        print(i)
       tmp=tmp.1=NULL
       
       sm = similarityMatrices[i]
@@ -143,6 +147,7 @@ nParallelThreads = 12
       if(nrow(tmp)==0) next
       
       ncol(tmp);nrow(tmp)
+      print(rownames(tmp)[1:5])
       if(all(  rownames(tmp) %>%as.numeric() %>% is.numeric())){
           colnames(tmp) = rownames(actualDataset)
           rownames(tmp) = rownames(actualDataset)
