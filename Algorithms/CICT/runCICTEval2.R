@@ -243,7 +243,8 @@ if(operation=='config_par'){
     
     ########### GENERAL settings for config generation
     url.dir.config = '/config-files_v2/'
-    configFiles = list.files(paste0(url.base,url.dir.config), pattern = 'L2.*')
+    configFiles = list.files(file.path(url.base,url.dir.config), pattern = 'L2.*')
+    #configFiles = list.files(paste0(url.base,url.dir.config), pattern = 'L2.*')
     #configFiles=list.files(paste0(url.base,'/config-files/'), pattern = 'mESC-scalingtmp' ) #'L\\d{1}[.]') #"config_L2.yaml"
     #configFiles = 'config_SERGIO_DS4.yaml' ;cnfg=configFiles
     
@@ -253,12 +254,14 @@ if(operation=='config_par'){
     
     theExperimentName = "sens_modeling_choices"   #"sens_edgeType" # "sens_multipleRuns"  #"cict_scaling" # "sens_sparsity" # 'calcEdgesConfs'  # 
     jobConfigBase.url = file.path(url.base,'outputs_v2','cict_par',theExperimentName)
+    #jobConfigBase.url = paste0(url.base,'/outputs_v2/cict_par/',theExperimentName,'/')
     if(!dir.exists(jobConfigBase.url)) dir.create(jobConfigBase.url,recursive = T)
     addToExperiment=F  #Add new config files to experiment directory or start anew
     
     if(addToExperiment == F){
       if(readline(prompt = paste0("Do you want to delete existing files in ", theExperimentName, " folder? (y/n)")) == 'y')
-        file.remove(paste0(jobConfigBase.url,'/', list.files(jobConfigBase.url,pattern = '*.yaml',all.files=F)))
+          file.remove(file.path(jobConfigBase.url,list.files(jobConfigBase.url,pattern = '*.yaml',all.files=F)))
+          #file.remove(paste0(jobConfigBase.url,'/', list.files(jobConfigBase.url,pattern = '*.yaml',all.files=F)))
       jobConfigBase.idx=0
     }else{
       jobConfigBase.idx = 
@@ -428,7 +431,8 @@ if(operation=='config_par'){
     library("foreach")
     library("doParallel")
     
-    parcnfTemplate = paste0(url.base,'/CICT_parallel_config_template.yaml') %>% read_yaml()
+    parcnfTemplate = file.path(url.base,'CICT_parallel_config_template.yaml') %>% read_yaml()
+    #parcnfTemplate = paste0(url.base,'/CICT_parallel_config_template.yaml') %>% read_yaml()
     if(!dir.exists(jobConfigBase.url)) dir.create(jobConfigBase.url,recursive = T)
     
     numCores=14
