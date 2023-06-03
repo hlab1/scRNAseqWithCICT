@@ -56,7 +56,7 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
                      operation, configFilePath, forceOutput))
 
 
-#CICT caller definition
+# CICT caller definition ----
 {
   
   CICT<-function(theJobID,
@@ -205,6 +205,7 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
 
 
 if(operation=='config_par'){
+# config_par ----
   
   #https://future.batchtools.futureverse.org/
   #https://mllg.github.io/batchtools/articles/batchtools.html
@@ -567,6 +568,7 @@ if(operation=='config_par'){
     
   }else 
     if(operation=='runCICT_par'){
+    # runCICT_par ----
       print('step 003')
       #Only takes two arguments one for config file and one for operation
       library(yaml)
@@ -651,6 +653,7 @@ if(operation=='config_par'){
       #rcrd$jobDesc  = data$jobDesc
     }else 
       if(operation=='runCICT' | operation=='calcEdges' | operation=='runSupervised')
+      # runCICT, calcEdges, runSupervised ----
       {
         
         library(yaml)
@@ -1017,7 +1020,7 @@ if(operation=='config_par'){
 
 
 
-#
+# L0/1/2 cs and ns ----
 if(F)
 {
   datasets = c("hESC","hHep","mESC" ,"mDC","mHSC-E" ,"mHSC-GM","mHSC-L"  )
@@ -1064,7 +1067,7 @@ if(F)
   
 }
 
-#Calcualte correlation in parallel
+# Calcualte correlation in parallel ----
 if(F)
 {
   
