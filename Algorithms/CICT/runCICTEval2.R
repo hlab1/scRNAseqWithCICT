@@ -1,15 +1,18 @@
 #Set working directory and paths
+here::i_am('Algorithms/CICT/runCICTEval2.R')
 
 
 
 print('step 000')
 
-url.base = "/scratch/as15096/eric"
+url.base = here::here()
+#url.base = "/scratch/as15096/eric"
 
 setwd(url.base)
 
 #source all libraries and functions and set up working director
-source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
+source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
+#source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
 
 args.cmnd <- commandArgs(trailingOnly = T)
 #args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs_v2/cict_par/sens_modeling_choices/parConf_3.yaml','TRUE') #sens_edgeType runCICT_par  #runCICT_par
@@ -524,14 +527,18 @@ if(operation=='config_par'){
     arg.pseudoTime <-  cnf$datasets[[1]]$cellData
     arg.gtFile <-  cnf$datasets[[1]]$trueEdges
     
-    url.inputFolder = paste0("/scratch/as15096/eric",'/',cnf$input_dir,'/',cnf$dataset_dir,'/',cnf$datasets[[1]]$name ,'/')
+    url.inputFolder = here::here(cnf$input_dir,cnf$dataset_dir,cnf$datasets[[1]]$name)
+    #url.inputFolder = paste0("/scratch/as15096/eric",'/',cnf$input_dir,'/',cnf$dataset_dir,'/',cnf$datasets[[1]]$name ,'/')
     #url.output - url.inputFolder
     #url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
     
-    url.input = paste0(url.inputFolder, arg.inFile)
-    url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
+    url.input = file.path(url.inputFolder, arg.inFile)
+    #url.input = paste0(url.inputFolder, arg.inFile)
+    url.rawedgefile = file.path(url.inputFolder,'rawEdges.csv')
+    #url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
     
-    url.name.map = paste0(url.inputFolder,'name_map.csv')
+    url.name.map = file.path(url.inputFolder,'name_map.csv')
+    #url.name.map = paste0(url.inputFolder,'name_map.csv')
     
     
     #**************************************************************
@@ -547,7 +554,7 @@ if(operation=='config_par'){
     
     #produce raw edges
     rm(similarityMatrices.new)
-    source('Algorithms/CICT/requirements/calculateRawEdges.R')
+    source(here::here('Algorithms','CICT','requirements','calculateRawEdges.R'))
     if(length(arg.edgeTypes.abs) > 0 ){
       similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =10)
       
@@ -594,22 +601,31 @@ if(operation=='config_par'){
       arg.pseudoTime <-  cnf$datasets[[1]]$cellData
       arg.gtFile <-  cnf$datasets[[1]]$trueEdges
       
-      url.inputFolder = paste0("/scratch/as15096/eric",'/',cnf$input_dir,'/',cnf$dataset_dir,'/',cnf$datasets[[1]]$name ,'/')
-      url.input = paste0(url.inputFolder, arg.inFile)
-      url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
+      url.inputFolder = here::here(cnf$input_dir,cnf$dataset_dir,cnf$datasets[[1]]$name)
+      #url.inputFolder = paste0("/scratch/as15096/eric",'/',cnf$input_dir,'/',cnf$dataset_dir,'/',cnf$datasets[[1]]$name ,'/')
+      url.input = file.path(url.inputFolder, arg.inFile)
+      #url.input = paste0(url.inputFolder, arg.inFile)
+      url.rawedgefile = file.path(url.inputFolder,'rawEdges.csv')
+      #url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
       
-      url.gt = paste0(url.inputFolder,arg.gtFile)
-      url.name.map = paste0(url.inputFolder,'name_map.csv')
+      url.gt = file.path(url.inputFolder,arg.gtFile)
+      #url.gt = paste0(url.inputFolder,arg.gtFile)
+      url.name.map = file.path(url.inputFolder,'name_map.csv')
+      #url.name.map = paste0(url.inputFolder,'name_map.csv')
       
-      url.output = paste0("/scratch/as15096/eric",'/outputs_v2/cict_par/',  cnf$experiment) # arg.dataFolder,'/',arg.dname,'/CICT' )
-      dir.create(url.output,recursive = T)
+      url.output = here::here('outputs','cict_par',cnf$experiment) # arg.dataFolder,'/',arg.dname,'/CICT' )
+      #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/cict_par/',  cnf$experiment) # arg.dataFolder,'/',arg.dname,'/CICT' )
+      if (!exists(url.output)) dir.create(url.output,recursive = T)
       
-      url.rankedEdges = paste0(url.output , '/rankedEdges',cnf$given_job_id,'.csv')
-      url.rankedEdgesGated = paste0(url.output , '/rankedEdgesGated',cnf$given_job_id,'.csv')
-      url.randomPreds = paste0(url.output,'/randomRankedEdges.csv')
+      url.rankedEdges = file.path(url.output , paste0('rankedEdges',cnf$given_job_id,'.csv'))
+      #url.rankedEdges = paste0(url.output , '/rankedEdges',cnf$given_job_id,'.csv')
+      url.rankedEdgesGated = file.path(url.output , paste0('rankedEdgesGated',cnf$given_job_id,'.csv'))
+      #url.rankedEdgesGated = paste0(url.output , '/rankedEdgesGated',cnf$given_job_id,'.csv')
+      url.randomPreds = file.path(url.output,'randomRankedEdges.csv')
+      #url.randomPreds = paste0(url.output,'/randomRankedEdges.csv')
       
-      
-      url.results= paste0(url.output,"/rslt_",cnf$given_job_id,".rds")
+      url.results= file.path(url.output,paste0("rslt_",cnf$given_job_id,".rds"))
+      #url.results= paste0(url.output,"/rslt_",cnf$given_job_id,".rds")
       if(file.exists(url.results) & forceOutput==T)
         if(file.size(url.results) >600 ) {
           print("===========> Results already exist (size >500 bytes) and forceOutput = FALSE")
@@ -619,7 +635,7 @@ if(operation=='config_par'){
       options(debug=NULL)
       
       
-      rm(rcrd)
+      if (exists("rcrd")) rm(rcrd)
       rcrd =CICT(cnf$given_job_id,
                  url.input,
                  url.rawedgefile,
@@ -660,7 +676,8 @@ if(operation=='config_par'){
         #cnfyaml = read_yaml('/scratch/as15096/eric/outputs/cict_par/sens_modeling_choices/parConf_1.yaml')
         
         #STEP 1  reads the mother config file *******************
-        cnfyaml = read_yaml(paste0(url.base,'/config-files_v1/',configFilePath)) #configFilePath='config_L2.yaml'
+        cnfyaml = read_yaml(file.path(url.base,'config-files_v1',configFilePath)) #configFilePath='config_L2.yaml'
+        #cnfyaml = read_yaml(paste0(url.base,'/config-files_v1/',configFilePath)) #configFilePath='config_L2.yaml'
         inputslocation ="inputs_beeline2" # "inputs"
         ds = cnfyaml$input_settings$datasets %>% rbindlist() 
         databases = str_subset(ds$name, "dream",negate= T)  # removing dreams data
@@ -677,16 +694,22 @@ if(operation=='config_par'){
           arg.gtFile <-  cnfyaml$input_settings$datasets[[idx]][['trueEdges']] #ground truth
           arg.edgeTypes <- cnfyaml$input_settings$algorithms[[1]]$params[['edgeTypes']] # comma separated  'Pearson, ewMImm'
           
-          url.inputbase = paste0("/scratch/as15096/eric",'/',inputslocation,'/',arg.dataFolder)
-          url.inputFolder = paste0(url.inputbase ,'/',arg.dname) #,'/CICT')
+          url.inputbase = here:here(inputslocation,arg.dataFolder)
+          #url.inputbase = paste0("/scratch/as15096/eric",'/',inputslocation,'/',arg.dataFolder)
+          url.inputFolder = file.path(url.inputbase ,arg.dname) #,'/CICT')
+          #url.inputFolder = paste0(url.inputbase ,'/',arg.dname) #,'/CICT')
           
-          url.input = paste0(url.inputFolder,'/' , arg.inFile) #arg.dataFolder,'_',
-          url.rawedgefile = paste0(url.inputbase,'/',arg.dname,'/rawEdges.csv')
-          url.gt = paste0(url.inputbase,'/',arg.dname,'/',arg.gtFile)
-          url.name.map = paste0(url.inputbase,'/',arg.dname,'/','name_map.csv')
+          url.input = file.path(url.inputFolder,arg.inFile) #arg.dataFolder,'_',
+          #url.input = paste0(url.inputFolder,'/' , arg.inFile) #arg.dataFolder,'_',
+          url.rawedgefile = file.path(url.inputbase,arg.dname,'rawEdges.csv')
+          #url.rawedgefile = paste0(url.inputbase,'/',arg.dname,'/rawEdges.csv')
+          url.gt = file.path(url.inputbase,arg.dname,arg.gtFile)
+          #url.gt = paste0(url.inputbase,'/',arg.dname,'/',arg.gtFile)
+          url.name.map = file.path(url.inputbase,arg.dname,'name_map.csv')
+          #url.name.map = paste0(url.inputbase,'/',arg.dname,'/','name_map.csv')
           
-          
-          url.output = paste0("/scratch/as15096/eric",'/outputs_v2/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
+          url.output = here::here('ouputs_v2',arg.dataFolder,arg.dname)
+          #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
           dir.create(url.output,recursive = T)
           
           # supervised.positiveClass <- args[5] # c:causal edges, 'c,rc': causal and reversecausal
@@ -706,12 +729,13 @@ if(operation=='config_par'){
               #TODO check if raw edges are not ready prepare it
               recalcSimMatrices=forceOutput
               
-              url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
+              url.output = here::here('outputs',arg.dataFolder,arg.dname,'CICT' )
+              #url.output = paste0("/scratch/as15096/eric",'/outputs/',arg.dataFolder,'/',arg.dname,'/CICT' )
               #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
-              if(!is.na(arg.experiment)) url.output=paste0(url.output,'/',arg.experiment) 
+              if(!is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
               
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
-              url.logfile = paste0(url.output , '/',arg.dname,'_cict log.txt')
+              url.logfile = file.path(url.output ,arg.dname,'_cict log.txt')
               write('Start',  file = url.logfile, append = F)
               
               msg = c("Calculating raw edges =====" )
@@ -741,7 +765,8 @@ if(operation=='config_par'){
               
               #produce raw edges
               rm(similarityMatrices.new)
-              source('Algorithms/CICT/requirements/calculateRawEdges.R')
+              source(here::here('Algorithms','CICT','requirements','calculateRawEdges.R'))
+              #source('Algorithms/CICT/requirements/calculateRawEdges.R')
               if(length(arg.edgeTypes.abs) > 0 ){
                 similarityMatrices.new = calculateRawEdges(arg.edgeTypes.abs,url.input,n.workers  =10)
                 
@@ -754,7 +779,7 @@ if(operation=='config_par'){
                 }else similarityMatrices = similarityMatrices.new
                 
                 try({write.table(similarityMatrices, url.rawedgefile, sep = ",", quote = FALSE, row.names = FALSE)})
-                try({write.table(similarityMatrices, paste0(url.output,'/rawEdges.csv'), sep = ",", quote = FALSE, row.names = FALSE)})
+                try({write.table(similarityMatrices, file.path(url.output,'rawEdges.csv'), sep = ",", quote = FALSE, row.names = FALSE)})
                 print(sprintf('%s raw edge calculations (%s) finished. %s', 
                               arg.dname, paste0(arg.edgeTypes.lst,collapse = ', ') ,Sys.time()))
               }
@@ -785,11 +810,15 @@ if(operation=='config_par'){
               theJobID=''
               
               if(theJobID !='') theJobID.tmp = paste0(theJobID,'_') else theJobID.tmp=''
-              url.outputFolder =  paste0(url.output ,'/CICT/',theJobID.tmp) 
+              url.outputFolder =  file.path(url.output ,'CICT',theJobID.tmp) 
+              #url.outputFolder =  paste0(url.output ,'/CICT/',theJobID.tmp) 
               dir.create(url.outputFolder,recursive = T)
               #url.outputFolder = "/scratch/as15096/eric/outputs/L2_lofgof/mESC/mESC_lofgof_training_sets/2/"
-              url.rankedEdges = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdges.csv')
-              url.rankedEdgesGated = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdgesGated.csv')
+              url.rankedEdges = file.path(url.output ,'CICT',paset0(theJobID.tmp, 'rankedEdges.csv'))
+              #url.rankedEdges = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdges.csv')
+              url.rankedEdgesGated = file.path(url.output ,'CICT',paste0(theJobID.tmp, 'rankedEdgesGated.csv'))
+              #url.rankedEdgesGated = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdgesGated.csv')
+              
               
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
               url.logfile = paste0(url.output , '/',arg.dname,'_cict log.txt')
@@ -805,8 +834,8 @@ if(operation=='config_par'){
               
               preset.train=NA; preset.test=NA
               if(usepresettraintest){
-                preset.train= read.csv(paste0(url.output ,'/CICT/','train.csv'),sep = '\t')
-                preset.test= read.csv(paste0(url.output ,'/CICT/','test.csv'),sep = '\t')
+                preset.train= read.csv(file.path(url.output ,'CICT','train.csv'),sep = '\t')
+                preset.test= read.csv(file.path(url.output ,'CICT','test.csv'),sep = '\t')
                 print("Using preset test and train datasets ======================================")
               }
               
@@ -838,7 +867,7 @@ if(operation=='config_par'){
               
               
               
-              try({saveRDS(rcrd,file=paste0(url.outputFolder,"_rslt_",".rds"))})
+              try({saveRDS(rcrd,file=file.path(url.outputFolder,paste0("_rslt_",".rds")))})
               
               #When learning set is provided e.g. for mESC_lofGOF
               if(F){  
@@ -892,7 +921,7 @@ if(operation=='config_par'){
                             preset.train=preset.train, preset.test=preset.test,
                             debug=F)
                   
-                  try({saveRDS(rcrd,file=paste0(path.learningset,"/_rslt_",i,".rds"))})
+                  try({saveRDS(rcrd,file=file.path(path.learningset,paste0("_rslt_",i,".rds")))})
                 }
                 
               }
@@ -910,16 +939,20 @@ if(operation=='config_par'){
               theJobID=''
               
               if(theJobID !='') theJobID.tmp = paste0(theJobID,'_') else theJobID.tmp=''
-              url.outputFolder =  paste0(url.output ,'/RandomForest/',theJobID.tmp) 
+              url.outputFolder =  file.path(url.output ,'RandomForest',theJobID.tmp) 
+              #url.outputFolder =  paste0(url.output ,'/RandomForest/',theJobID.tmp) 
               #url.outputFolder = "/scratch/as15096/eric/outputs/L2_lofgof/mESC/mESC_lofgof_training_sets/2/"
-              url.rankedEdges = paste0(url.output ,'/RandomForest/',theJobID.tmp, 'rankedEdges.csv')
-              url.rankedEdgesGated = paste0(url.output ,'/RandomForest/',theJobID.tmp, 'rankedEdgesGated.csv')
+              url.rankedEdges = file.path(url.output ,'RandomForest',paste0(theJobID.tmp, 'rankedEdges.csv'))
+              #url.rankedEdges = paste0(url.output ,'/RandomForest/',theJobID.tmp, 'rankedEdges.csv')
+              url.rankedEdgesGated = file.path(url.output ,'RandomForest',paste0(theJobID.tmp, 'rankedEdgesGated.csv'))
+              #url.rankedEdgesGated = paste0(url.output ,'/RandomForest/',theJobID.tmp, 'rankedEdgesGated.csv')
               
               #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
               if(!is.na(arg.experiment)) url.output=paste0(url.outputFolder,arg.experiment) 
               if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
               
-              url.logfile = paste0(url.output , '/',arg.dname,'_supervised log.txt')
+              url.logfile = file.path(url.output , paste0(arg.dname,'_supervised log.txt'))
+              #url.logfile = paste0(url.output , '/',arg.dname,'_supervised log.txt')
               write('Start',  file = url.logfile, append = F)
               
               
@@ -996,7 +1029,7 @@ if(operation=='config_par'){
                 
                 
                 
-                try({saveRDS(rcrd,file=paste0(url.outputFolder,"_rslt_",".rds"))})
+                try({saveRDS(rcrd,file=file.path(url.outputFolder,paste0("_rslt_",".rds")))})
                 
               } else {
                 print(sprintf("RawEdge file %s does not exist",url.rawedgefile))
@@ -1030,10 +1063,14 @@ if(F)
   
   for(lvl in Levels)
     for(dt in datasets){
-      url.input= paste0("/scratch/as15096/eric",'/inputs_beeline2/',lvl,'/',dt)
-      url.output = paste0("/scratch/as15096/eric",'/outputs/',  lvl,'/',dt,'/CICT') # arg.dataFolder,'/',arg.dname,'/CICT' )
-      url.rawedges.i = paste0(url.input,'/rawEdges.csv')
-      url.rawedges.o = paste0(url.output,'/rawEdges.csv')
+      url.input= here::here('inputs_beeline2',lvl,dt)
+      #url.input= paste0("/scratch/as15096/eric",'/inputs_beeline2/',lvl,'/',dt)
+      url.output = here::here('outputs',  lvl,dt,'CICT')
+      #url.output = paste0("/scratch/as15096/eric",'/outputs/',  lvl,'/',dt,'/CICT') # arg.dataFolder,'/',arg.dname,'/CICT' )
+      url.rawedges.i = file.path(url.input,'rawEdges.csv')
+      #url.rawedges.i = paste0(url.input,'/rawEdges.csv')
+      url.rawedges.o = file.path(url.output,'/rawEdges.csv')
+      #url.rawedges.o = paste0(url.output,'/rawEdges.csv')
       
       i=i+1   
       #Report raw edges
@@ -1057,7 +1094,7 @@ if(F)
       
       #report learningset export
       if(F){
-        url.train =  paste0(url.output,'/train.csv')
+        url.train =  file.path(url.output,'train.csv')
         if(!file.exists(url.train))
         {
           print(paste0('Train ', lvl, ' ', dt, ' is missing <<<<-----------'))
@@ -1089,7 +1126,8 @@ if(F)
   cor_matrix.lng = cor_matrix %>% as.data.frame() %>% 
     rownames_to_column('Gene1') %>% pivot_longer(everything() & -Gene1,names_to = 'Gene2')
   
-  write.csv(cor_matrix.lng,paste0(url.output,'/','rawEdges_', arg.inFile))
+  write.csv(cor_matrix.lng,file.path(url.output,paste0('rawEdges_', arg.inFile)))
+  #write.csv(cor_matrix.lng,paste0(url.output,'/','rawEdges_', arg.inFile))
   stopCluster(cl)
   
   
