@@ -1,4 +1,5 @@
-
+here::i_am('CICT_pipeline/requirements/calculateRawEdges.R')
+library(here)
 
 
 nParallelThreads = 2
@@ -6,11 +7,11 @@ nParallelThreads = 2
 #Mutual information steady state Multiple measures parallel
 {
   #Parallel partition for each measure, multiple measures
-  calculateRawEdges<-function(edgeTypes,url.data,processingCluster,n.workers  =5){ 
+  calculateRawEdges<-function(edgeTypes,url.data,n.workers  =5,url.CICT_algo){ 
     print(" - Processing in parallel - ")
     
-    
-    source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
+    source(here::here('CICT_pipeline','requirements','rnR_Framework.R')    )
+    #source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
     #s0m3
     library(doParallel);
     
@@ -53,7 +54,9 @@ nParallelThreads = 2
       clusterEvalQ(processingCluster, library(infotheo));
       clusterEvalQ(processingCluster, library(igraph));
       clusterEvalQ(processingCluster, library(minet));
-      clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
+                                        #clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
+      clusterEvalQ(processingCluster, source(here::i_am('CICT_pipeline/requirements/calculateRawEdges.R')));
+      clusterEvalQ(processingCluster, source(here::here('CICT_pipeline','requirements','rnR_Framework.R')));
     })
 
     #If has more cores available then the number of simulations, let them be used on parallelizing subprocesses
