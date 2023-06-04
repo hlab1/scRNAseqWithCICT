@@ -20,11 +20,10 @@ nParallelThreads = 12
     if(length(genecol)>0) actualDataset =actualDataset %>% column_to_rownames(genecol) 
     actualDataset = actualDataset %>% select_if(is.numeric) #genes in rows and cells in columns  #  stop('Set correct data source') #  all.tdt
       
-    
     actualDatasetNNodes <- nrow(actualDataset) + 1;
     actualDatasetNObservations <- ncol(actualDataset);
-                                        #actualDatasetName <- basename(url.input)
     actualDatasetName <- basename(url.data)
+    #actualDatasetName <- basename(url.input)
     actualDatasetSymbolicPatterns=0;
     actualDatasetPatterns=0
     
