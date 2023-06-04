@@ -32,9 +32,13 @@ CICT can be called directory on the command line with the configuration file wit
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R <operation> <config_file_path> <force_output> [<use_preset_learning>]
 ```
-<operation>: One of the following options: `calcEdges`, `runCICT`
-<config_file_path<: Path to the configuration file for the CICT algorithm
+
+\<operation\>: One of the following options: `calcEdges`, `runCICT`
+  
+<config_file_path>: Path to the configuration file for the CICT algorithm
+  
 <force_output>: Set to 'TRUE' to overwrite existing outputs, 'FALSE' otherwise
+  
 <use_preset_learning> (optional): Set to `TRUE` to use use existing learning set edges in `train.csv`and `test.csv`, default to `FALSE`
 
 
@@ -81,8 +85,8 @@ CICT(theJobID, url.input, url.rawedgefile, url.name.map, url.gt, url.output, url
 
 ## 3. Additional Notes
 
-### If you want to run the CICT algorithm in parallel, use the future.batchtools and batchtools libraries and configure the parallel settings as needed.
+* If you want to run the CICT algorithm in parallel, use the future.batchtools and batchtools libraries and configure the parallel settings as needed.
 
-### You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm.
+* You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm.
 
-Please refer to the code comments for more information on the CICT algorithm and its configuration options.
+* Please refer to the code comments for more information on the CICT algorithm and its configuration options.
