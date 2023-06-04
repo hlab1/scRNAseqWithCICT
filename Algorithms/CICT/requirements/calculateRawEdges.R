@@ -23,7 +23,8 @@ nParallelThreads = 12
     
     actualDatasetNNodes <- nrow(actualDataset) + 1;
     actualDatasetNObservations <- ncol(actualDataset);
-    actualDatasetName <- basename(url.input)
+                                        #actualDatasetName <- basename(url.input)
+    actualDatasetName <- basename(url.data)
     actualDatasetSymbolicPatterns=0;
     actualDatasetPatterns=0
     
