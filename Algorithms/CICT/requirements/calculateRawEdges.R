@@ -134,7 +134,6 @@ nParallelThreads = 12
     
     #Merge similarityMatrices into a data.frame and return it 
     for(i in 1:length(similarityMatrices)){
-        print(i)
       tmp=tmp.1=NULL
       
       sm = similarityMatrices[i]
