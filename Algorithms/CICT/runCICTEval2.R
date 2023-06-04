@@ -15,6 +15,53 @@ setwd(url.base)
 source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
 #source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
 
+if (interactive()) {
+    args.cmnd <- commandArgs(trailingOnly = T)
+    }
+#args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs_v2/cict_par/sens_modeling_choices/parConf_3.yaml','TRUE') #sens_edgeType runCICT_par  #runCICT_par
+#args.cmnd = c('runCICT','config_L2.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('calcEdges','config_L2.yaml','TRUE') 
+#args.cmnd = c('runCICT','config_SERGIO_DS4.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('calcEdges','mESC-scalingtmp.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('config_par','mESC-scalingtmp.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs/cict_par/cict_scaling/parConf_6.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('runSupervised','config_L2_lofgof.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
+#args.cmnd = c('runCICT','config_L2_lofgof.yaml','TRUE') # For multisets mESC_lofgof
+args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
+
+print('step 001')
+
+if(length(args.cmnd)<3 ){
+  print('Please provide {calcEdges|runCICT|runCICT_par|calcEdges_par|runSupervised}
+                          {config file(s) path or config file name}
+                          {ignore and overwrite existing outputs FALSE|TRUE}
+                          [Use preset train and test sets FALSE|TRUE]') 
+  
+  print(sprintf("Current arguments: 1: %s \n 2: %s\n 3: %s \n 4: %s\n",
+                args.cmnd[1],args.cmnd[2],args.cmnd[3],args.cmnd[4]))
+  
+  
+  return(-1)
+} 
+
+operation<-args.cmnd[1]
+configFilePath <- args.cmnd[2]
+forceOutput<- as.logical(args.cmnd[3])
+usepresettraintest<- as.logical(args.cmnd[4])
+
+
+print('step 002')
+if(is.na(forceOutput)) forceOutput = FALSE
+if(is.na(usepresettraintest)) usepresettraintest = FALSE
+#arg.experiment <- args.cmnd[4]
+
+if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','install','calcEdges_par')){
+  print(paste0('Invalid operation requested: ', operation))
+  return(-1)
+} else print(sprintf("============================== Operation: %s, Config: %s, forceOutputReplace: %s", 
+                     operation, configFilePath, forceOutput))
+
+
 # CICT caller definition ----
 {
   
@@ -35,10 +82,7 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
                  trainingTarget='class2',
                  tstPrecent = .3,
                  forceOutput=F,
-                 operation=NA,
-                 arg.dname=NA,
-                 arg.gtFile=NA,
-                 arg.experiment=NA,
+                 arg.experiment = NA,
                  FLAG_runOnAllEdges=T,
                  FLAG_exportRankedEdges = T,
                  FLAG_exportTrainAndTest=F,
@@ -163,41 +207,6 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
   
 } 
 #Parallel run
-
-# CICT driver/main function ----
-runCICTEval2<-function(args.cmnd) {
-    
-print('step 001')
-
-if(length(args.cmnd)<3 ){
-  print('Please provide {calcEdges|runCICT|runCICT_par|calcEdges_par|runSupervised}
-                          {config file(s) path or config file name}
-                          {ignore and overwrite existing outputs FALSE|TRUE}
-                          [Use preset train and test sets FALSE|TRUE]') 
-  
-  print(sprintf("Current arguments: 1: %s \n 2: %s\n 3: %s \n 4: %s\n",
-                args.cmnd[1],args.cmnd[2],args.cmnd[3],args.cmnd[4]))
-  
-  
-  return(-1)
-} 
-
-operation<-args.cmnd[1]
-configFilePath <- args.cmnd[2]
-forceOutput<- as.logical(args.cmnd[3])
-usepresettraintest<- as.logical(args.cmnd[4])
-
-
-print('step 002')
-if(is.na(forceOutput)) forceOutput = FALSE
-if(is.na(usepresettraintest)) usepresettraintest = FALSE
-#arg.experiment <- args.cmnd[4]
-
-if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','install','calcEdges_par')){
-  print(paste0('Invalid operation requested: ', operation))
-  return(-1)
-} else print(sprintf("============================== Operation: %s, Config: %s, forceOutputReplace: %s", 
-                     operation, configFilePath, forceOutput))
 
 
 if(operation=='config_par'){
@@ -652,9 +661,6 @@ if(operation=='config_par'){
                  trainingTarget=cnf$CICT$trainingTarget,
                  tstPrecent =cnf$CICT$tstPrecent,
                  forceOutput=forceOutput,
-                 operation=operation,
-                 arg.dname=arg.dname,
-                 arg.gtFile=arg.gtFile,
                  FLAG_runOnAllEdges = F,
                  FLAG_exportRankedEdges = F,
                  FLAG_exportTrainAndTest=F,
@@ -860,9 +866,6 @@ if(operation=='config_par'){
                         trainingTarget='class2',
                         tstPrecent = .3,
                         forceOutput=forceOutput,
-                        operation=operation,
-                        arg.dname=arg.dname,
-                        arg.gtFile=arg.gtFile,
                         FLAG_runOnAllEdges =T,
                         FLAG_exportRankedEdges = T,
                         FLAG_exportTrainAndTest = T,
@@ -921,9 +924,6 @@ if(operation=='config_par'){
                             trainingTarget='class2',
                             tstPrecent = .3,
                             forceOutput=forceOutput,
-                            operation=operation,
-                            arg.dname=arg.dname,
-                            arg.gtFile=arg.gtFile,
                             FLAG_runOnAllEdges =T,
                             FLAG_exportRankedEdges = T,
                             FLAG_exportTrainAndTest = T,
@@ -1059,23 +1059,7 @@ if(operation=='config_par'){
         }
       }
 
-} #END runCICTEval2
 
-
-# Entry point for non-interative mode ----
-if (! interactive()) {
-    args.cmnd <- commandArgs(trailingOnly = T)
-    runCICTEval2(args.cmnd)
-    }
-#args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs_v2/cict_par/sens_modeling_choices/parConf_3.yaml','TRUE') #sens_edgeType runCICT_par  #runCICT_par
-#args.cmnd = c('runCICT','config_L2.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('calcEdges','config_L2.yaml','TRUE') 
-#args.cmnd = c('runCICT','config_SERGIO_DS4.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('calcEdges','mESC-scalingtmp.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('config_par','mESC-scalingtmp.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs/cict_par/cict_scaling/parConf_6.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('runSupervised','config_L2_lofgof.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
-#args.cmnd = c('runCICT','config_L2_lofgof.yaml','TRUE') # For multisets mESC_lofgof
 
 
 
