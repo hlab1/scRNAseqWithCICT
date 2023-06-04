@@ -32,8 +32,8 @@ CICT can be called directory on the command line with the configuration file wit
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R <operation> <config_file_path> <force_output> [<use_preset_learning>]
 ```
-
-* \<operation\>: One of the following options: `calcEdges`, `runCICT`, `runSupervised`, `config_par`, `calcEdges_par`, `runCICT_par` 
+The arguments are:
+* <operation>\: One of the following options: `calcEdges`, `runCICT`, `runSupervised`, `config_par`, `calcEdges_par`, `runCICT_par` 
 * <config_file_path>: Path to the configuration file for the CICT algorithm
 * <force_output>: Set to 'TRUE' to overwrite existing outputs, 'FALSE' otherwise
 * <use_preset_learning> (optional): Set to `TRUE` to use use existing learning set edges in `train.csv`and `test.csv`, default to `FALSE`
