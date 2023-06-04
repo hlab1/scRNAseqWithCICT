@@ -35,6 +35,9 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
                  trainingTarget='class2',
                  tstPrecent = .3,
                  forceOutput=F,
+                 operation=NA,
+                 arg.dname=NA,
+                 arg.gtFile=NA,
                  arg.experiment=NA,
                  FLAG_runOnAllEdges=T,
                  FLAG_exportRankedEdges = T,
@@ -161,7 +164,7 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
 } 
 #Parallel run
 
-# CICT driver function ----
+# CICT driver/main function ----
 runCICTEval2<-function(args.cmnd) {
     
 print('step 001')
@@ -649,6 +652,9 @@ if(operation=='config_par'){
                  trainingTarget=cnf$CICT$trainingTarget,
                  tstPrecent =cnf$CICT$tstPrecent,
                  forceOutput=forceOutput,
+                 operation=operation,
+                 arg.dname=arg.dname,
+                 arg.gtFile=arg.gtFile,
                  FLAG_runOnAllEdges = F,
                  FLAG_exportRankedEdges = F,
                  FLAG_exportTrainAndTest=F,
@@ -854,6 +860,9 @@ if(operation=='config_par'){
                         trainingTarget='class2',
                         tstPrecent = .3,
                         forceOutput=forceOutput,
+                        operation=operation,
+                        arg.dname=arg.dname,
+                        arg.gtFile=arg.gtFile,
                         FLAG_runOnAllEdges =T,
                         FLAG_exportRankedEdges = T,
                         FLAG_exportTrainAndTest = T,
@@ -912,6 +921,9 @@ if(operation=='config_par'){
                             trainingTarget='class2',
                             tstPrecent = .3,
                             forceOutput=forceOutput,
+                            operation=operation,
+                            arg.dname=arg.dname,
+                            arg.gtFile=arg.gtFile,
                             FLAG_runOnAllEdges =T,
                             FLAG_exportRankedEdges = T,
                             FLAG_exportTrainAndTest = T,
