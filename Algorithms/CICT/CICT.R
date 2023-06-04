@@ -1901,7 +1901,7 @@ cictTrainTestReport <-function(n.itm.e,rcrd,method='CICT',
     #If a predifined train and test set is provided
     
     
-    if(!is.na(preset.train)){
+    if(! (length(preset.train)==1 && is.na(preset.train))) {
       t2 = rbind( preset.train %>% select(Gene1,Gene2) %>% inner_join(t1,by=c("Gene1"="src","Gene2"="trgt")),
                   preset.train %>% select(Gene1,Gene2) %>% inner_join(t1,by=c("Gene2"="src","Gene1"="trgt")),
                   preset.test %>% select(Gene1,Gene2) %>% inner_join(t1,by=c("Gene1"="src","Gene2"="trgt"))
@@ -2121,7 +2121,7 @@ cictTrainTestReport <-function(n.itm.e,rcrd,method='CICT',
   ntrgtClass =  nrow(tst1.totalset[get(trainingTarget)== TRUE,])
   
   #@@@@@@@@@@@@@@@@@@@@@@@
-  if(!is.na(preset.train)){
+  if(! (length(preset.train)==1 && is.na(preset.train))) {
     tst1.tst =  preset.test %>% select(Gene1,Gene2) %>% inner_join(tst1.totalset,by=c("Gene1"="src","Gene2"="trgt"))
     tst1.train = tst1.totalset %>% anti_join(tst1.tst,by=c("src"="Gene1","trgt"="Gene2"))
                                                                    
@@ -2155,7 +2155,7 @@ cictTrainTestReport <-function(n.itm.e,rcrd,method='CICT',
   rcrd=c(rcrd, tmp)
   
   
-  if(FLAG_exportTrainAndTest & is.na(preset.train) & !usepresettraintest){
+  if(FLAG_exportTrainAndTest & (length(preset.train)==1 && is.na(preset.train)) & !usepresettraintest){
     try({
       
       print("Saving ground truth =============================================")
