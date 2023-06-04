@@ -185,10 +185,6 @@ if(!operation %in% c('calcEdges','runCICT','runSupervised','runCICT_par','instal
         n.itm.e = n.itm.e %>% filter(src %in% genes.included & trgt %in% genes.included)
       }
   
-    
-    print(url.rankedEdges)
-    print(url.rankedEdgesGated)
-    print(forceOutput)
     if( (!file.exists(url.rankedEdges) | !file.exists(url.rankedEdgesGated)) | forceOutput) {
       #try({   
       
@@ -545,8 +541,7 @@ if(operation=='config_par'){
     #url.input = paste0(url.inputFolder, arg.inFile)
     url.rawedgefile = file.path(url.inputFolder,'rawEdges.csv')
     #url.rawedgefile = paste0(url.inputFolder,'rawEdges.csv')
-    print(url.rawedgefile)
-    
+
     url.name.map = file.path(url.inputFolder,'name_map.csv')
     #url.name.map = paste0(url.inputFolder,'name_map.csv')
     
@@ -686,7 +681,6 @@ if(operation=='config_par'){
         library(yaml)
         #cnfyaml = read_yaml('/scratch/as15096/eric/outputs/cict_par/sens_modeling_choices/parConf_1.yaml')
         
-          print(configFilePath)
         #STEP 1  reads the mother config file *******************
         cnfyaml = read_yaml(configFilePath) #configFilePath='config_L2.yaml'
         #cnfyaml = read_yaml(paste0(url.base,'/config-files_v1/',configFilePath)) #configFilePath='config_L2.yaml'
