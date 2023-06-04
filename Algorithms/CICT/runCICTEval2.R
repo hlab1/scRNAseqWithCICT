@@ -15,9 +15,7 @@ setwd(url.base)
 source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
 #source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
 
-if (interactive()) {
-    args.cmnd <- commandArgs(trailingOnly = T)
-    }
+args.cmnd <- commandArgs(trailingOnly = T)
 #args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs_v2/cict_par/sens_modeling_choices/parConf_3.yaml','TRUE') #sens_edgeType runCICT_par  #runCICT_par
 #args.cmnd = c('runCICT','config_L2.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('calcEdges','config_L2.yaml','TRUE') 
