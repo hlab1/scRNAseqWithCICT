@@ -15,7 +15,9 @@ setwd(url.base)
 source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
 #source('/scratch/as15096/eric/Algorithms/CICT/requirements/CICT_LibsFunctions.R')
 
-args.cmnd <- commandArgs(trailingOnly = T)
+if (interactive()) {
+    args.cmnd <- commandArgs(trailingOnly = T)
+    }
 #args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs_v2/cict_par/sens_modeling_choices/parConf_3.yaml','TRUE') #sens_edgeType runCICT_par  #runCICT_par
 #args.cmnd = c('runCICT','config_L2.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('calcEdges','config_L2.yaml','TRUE') 
@@ -25,14 +27,14 @@ args.cmnd <- commandArgs(trailingOnly = T)
 #args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs/cict_par/cict_scaling/parConf_6.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('runSupervised','config_L2_lofgof.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('runCICT','config_L2_lofgof.yaml','TRUE') # For multisets mESC_lofgof
-
+args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
 
 print('step 001')
 
 if(length(args.cmnd)<3 ){
-  print('Please provide [calcEdges|runCICT|runCICT_par|calcEdges_par|runSupervised|] 
-                          [config file(s) path or config file name]  
-                          [ignore and overwrite existing outputs FALSE|TRUE]
+  print('Please provide {calcEdges|runCICT|runCICT_par|calcEdges_par|runSupervised}
+                          {config file(s) path or config file name}
+                          {ignore and overwrite existing outputs FALSE|TRUE}
                           [Use preset train and test sets FALSE|TRUE]') 
   
   print(sprintf("Current arguments: 1: %s \n 2: %s\n 3: %s \n 4: %s\n",
