@@ -60,17 +60,19 @@ Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files-split/config_L0_spli
 ```
 `calcCICT` creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
 
-## 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
+### 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
 
 Start R in the `PROJ_ROOT` directory.
 
 Set the varaible `args.cmnd` for calculating raw edge weights or run CICT (see 2a) and source the driver script `runCICTEval2`.
-* To calculate edge weights
+
+To calculate edge weights
 ```
 args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
 source('Algorithms/CICT/runCICTEval2.R')
 ```
-* To run CICT inference
+
+To run CICT training and prediction
 ```
 args.cmnd = c('runCICT','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
 source('Algorithms/CICT/runCICTEval2.R')
