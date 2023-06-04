@@ -35,7 +35,7 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
                  trainingTarget='class2',
                  tstPrecent = .3,
                  forceOutput=F,
-                 arg.experiment = NA,
+                 arg.experiment=NA,
                  FLAG_runOnAllEdges=T,
                  FLAG_exportRankedEdges = T,
                  FLAG_exportTrainAndTest=F,
@@ -161,7 +161,7 @@ source(here::here('Algorithms','CICT','requirements','CICT_LibsFunctions.R'))
 } 
 #Parallel run
 
-
+# CICT driver function ----
 runCICTEval2<-function(args.cmnd) {
     
 print('step 001')
@@ -1050,6 +1050,7 @@ if(operation=='config_par'){
 } #END runCICTEval2
 
 
+# Entry point for non-interative mode ----
 if (! interactive()) {
     args.cmnd <- commandArgs(trailingOnly = T)
     runCICTEval2(args.cmnd)
