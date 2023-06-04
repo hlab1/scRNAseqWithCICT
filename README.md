@@ -33,8 +33,8 @@ cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R <operation> <config_file_path> <force_output> [<use_preset_learning>]
 ```
 
-\<operation\>: One of the following options: `calcEdges`, `runCICT`
-  
+\<operation\>: One of the following options: `calcEdges`, `runCICT`, `runSupervised`, `config_par`, `calcEdges_par`, `runCICT_par` 
+
 <config_file_path>: Path to the configuration file for the CICT algorithm
   
 <force_output>: Set to 'TRUE' to overwrite existing outputs, 'FALSE' otherwise
@@ -87,6 +87,6 @@ CICT(theJobID, url.input, url.rawedgefile, url.name.map, url.gt, url.output, url
 
 * If you want to run the CICT algorithm in parallel, use the future.batchtools and batchtools libraries and configure the parallel settings as needed.
 
-* You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm.
+* You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm. See the operations `config_par`, `calcEdges_par`, `runCICT_par`.
 
 * Please refer to the code comments for more information on the CICT algorithm and its configuration options.
