@@ -18,11 +18,11 @@ The pre-requisite packages are installed by the `requirement.r` script.
 
 ### 1b. Make configration file
 
-See example in `config-files-split/config_L0_split/hHep/CICT/config.yaml`.  It defines the paths of the input and output data files and parameters for running CICT.
+See example in `config-files/config_SERGIO_DS4_net01_CICT.yaml`.  It defines the paths of the input and output data files and parameters for running CICT.
 
 ### 1c. Organize expression data file
 
-The file paths are constructed from values specified in the configuration file in 1b. The gene expression data file is a comma-separated text file with header in the path  `{input_dir}/{dataset_dir}/{datasets.name}/{exprData}`. The ground-truth network is a comma-seperated text file with header in `{input_dir}/{dataset_dir}/{datasets.name}/{refNetwork}`.  See examples in `inputs/L0/hHep/ExpressionData.csv` and `inputs/L0/hHep/refNetwork.csv`.
+The file paths are constructed from values specified in the configuration file in 1b. The gene expression data file is a comma-separated text file with header in the path  `{input_dir}/{dataset_dir}/{datasets.name}/{exprData}`. The ground-truth network is a comma-seperated text file with header in `{input_dir}/{dataset_dir}/{datasets.name}/{refNetwork}`.  See examples in `inputs/SERGIO_DS4/net0` and `inputs/SERGIO_DS4/net1`.
 
 
 ## 2. Running CICT
@@ -44,21 +44,24 @@ The arguments are:
 To run CICT, first use operation `calcEdges` to calculate raw edge weights:
 ```
 cd $PROJ_ROOT
-Rscript Algorithms/CICT/runCICTEval2.R calcEdges config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE
+Rscript Algorithms/CICT/runCICTEval2.R calcEdges config-files/config_SERGIO_DS4_net01_CICT.yaml TRUE
 ```
 This creates the file `{input_dir}/{dataset_dir}/{datasets.name}/rawEdges.csv`
 
 Then use the operation `runCICT` to conduct CICT training and prediction using learning sets sampled from the ground truth:
 ```
 cd $PROJ_ROOT
-Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE
+Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files/config_SERGIO_DS4_net01_CICT.yaml TRUE
 ```
-Alternatively, to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the `use_preset_learning` argument and set it to TRUE.
+This creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
+
+If you want to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the `use_preset_learning` argument and set it to TRUE.
 ```
 cd $PROJ_ROOT
-Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE TRUE
+Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files/config_SERGIO_DS4_net01_CICT.yaml TRUE TRUE
 ```
-`calcCICT` creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
+This uses the `train.csv` and `test.csv` learning sets from the previous run.
+
 
 ### 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
 
@@ -66,17 +69,24 @@ Start R in the `PROJ_ROOT` directory.
 
 Set the varaible `args.cmnd` for calculating raw edge weights or run CICT (see 2a) and source the driver script `runCICTEval2`.
 
-To calculate edge weights
+To calculate edge weights:
 ```
-args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
+args.cmnd = c('calcEdges','config-files/config_SERGIO_DS4_net01_CICT.yaml', TRUE) 
 source('Algorithms/CICT/runCICTEval2.R')
 ```
 
-To run CICT training and prediction
+To run CICT training and prediction with new sampling of training and test sets:
 ```
-args.cmnd = c('runCICT','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
+args.cmnd = c('runCICT','config-files/config_SERGIO_DS4_net01_CICT.yaml', TRUE) 
 source('Algorithms/CICT/runCICTEval2.R')
 ```
+
+To run CICT training and prediction with training and test sets from a previous run:
+```
+args.cmnd = c('runCICT','config-files/config_SERGIO_DS4_net01_CICT.yaml', TRUE, TRUE)
+source('Algorithms/CICT/runCICTEval2.R')
+```
+
 
 ## 3. Additional Notes
 
