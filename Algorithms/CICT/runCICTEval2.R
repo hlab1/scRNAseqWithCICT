@@ -25,7 +25,6 @@ args.cmnd <- commandArgs(trailingOnly = T)
 #args.cmnd = c('runCICT_par','/scratch/as15096/eric/outputs/cict_par/cict_scaling/parConf_6.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('runSupervised','config_L2_lofgof.yaml','TRUE') #runCICT_par  #runCICT_par  config_SERGIO_DS4.yaml
 #args.cmnd = c('runCICT','config_L2_lofgof.yaml','TRUE') # For multisets mESC_lofgof
-args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
 
 print('step 001')
 
@@ -621,7 +620,7 @@ if(operation=='config_par'){
       
       url.output = here::here('outputs','cict_par',cnf$experiment) # arg.dataFolder,'/',arg.dname,'/CICT' )
       #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/cict_par/',  cnf$experiment) # arg.dataFolder,'/',arg.dname,'/CICT' )
-      if (!exists(url.output)) dir.create(url.output,recursive = T)
+      if (!dir.exists(url.output)) dir.create(url.output,recursive = T)
       
       url.rankedEdges = file.path(url.output , paste0('rankedEdges',cnf$given_job_id,'.csv'))
       #url.rankedEdges = paste0(url.output , '/rankedEdges',cnf$given_job_id,'.csv')
@@ -717,7 +716,7 @@ if(operation=='config_par'){
           
           url.output = here::here(cnfyaml$output_settings$output_dir,arg.dataFolder,arg.dname)
           #url.output = paste0("/scratch/as15096/eric",'/outputs_v2/',  arg.dataFolder,'/',arg.dname) # arg.dataFolder,'/',arg.dname,'/CICT' )
-          if (!file.exists(url.output)) dir.create(url.output,recursive = T)
+          if (!dir.exists(url.output)) dir.create(url.output,recursive = T)
           
           # supervised.positiveClass <- args[5] # c:causal edges, 'c,rc': causal and reversecausal
           # supervised.negativeClass<- args[6]  # r:random edges, 'rc': reversecausal  
@@ -741,7 +740,7 @@ if(operation=='config_par'){
               #Adds a subfolder to CICT for outputs of an experiemntal run, e.g. different params
               if(exists("arg.experiment") && !is.na(arg.experiment)) url.output=file.path(url.output,arg.experiment) 
               
-              if(!dir.exists(url.outputFolder)) dir.create(url.output,recursive = T)
+              if(!dir.exists(url.outputFolder)) dir.create(url.outputFolder,recursive = T)
               url.logfile = file.path(url.outputFolder ,paste0(arg.dname,'_calcedges_log.txt'))
               write('Start',  file = url.logfile, append = F)
               
@@ -820,7 +819,7 @@ if(operation=='config_par'){
               if(theJobID !='') theJobID.tmp = paste0(theJobID,'_') else theJobID.tmp=''
               url.outputFolder =  file.path(url.output ,'CICT',theJobID.tmp) 
               #url.outputFolder =  paste0(url.output ,'/CICT/',theJobID.tmp) 
-              if (!file.exists(url.outputFolder)) dir.create(url.outputFolder,recursive = T)
+              if (! dir.exists(url.outputFolder)) dir.create(url.outputFolder,recursive = T)
               #url.outputFolder = "/scratch/as15096/eric/outputs/L2_lofgof/mESC/mESC_lofgof_training_sets/2/"
               url.rankedEdges = file.path(url.output ,'CICT',paste0(theJobID.tmp, 'rankedEdges.csv'))
               #url.rankedEdges = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdges.csv')
@@ -828,7 +827,7 @@ if(operation=='config_par'){
               #url.rankedEdgesGated = paste0(url.output ,'/CICT/',theJobID.tmp, 'rankedEdgesGated.csv')
               
               
-              if(!dir.exists(url.output)) dir.create(url.output,recursive = T)
+              if(! dir.exists(url.output)) dir.create(url.output,recursive = T)
               url.logfile = file.path(url.output , paste0(arg.dname,'_run_log.txt'))
               write('Start',  file = url.logfile, append = F)
               
