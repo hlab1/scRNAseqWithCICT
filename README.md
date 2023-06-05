@@ -1,6 +1,8 @@
 
 # CICT for Gene Regulator Network Infernce from gene expression data
 
+**Reference**: Abbas Shojaee and Shao-shan Carol Huang, Robust discovery of gene regulatory networks from single-cell gene expression data using Causal Inference with Composition of Transactions. Manuscript in preparation. 2023.
+
 This repository contains code to run the CICT (Causal Inference Causality Test) algorithm on various datasets. The code is organized into two main parts:
 
 * Initial setup and configuration
@@ -32,57 +34,54 @@ CICT can be called directory on the command line with the configuration file wit
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R <operation> <config_file_path> <force_output> [<use_preset_learning>]
 ```
-<operation>: One of the following options: `calcEdges`, `runCICT`
-<config_file_path<: Path to the configuration file for the CICT algorithm
-<force_output>: Set to 'TRUE' to overwrite existing outputs, 'FALSE' otherwise
-<use_preset_learning> (optional): Set to `TRUE` to use use existing learning set edges in `train.csv`and `test.csv`, default to `FALSE`
+The arguments are:
+* <operation>\: One of the following options: `calcEdges`, `runCICT`, `runSupervised`, `config_par`, `calcEdges_par`, `runCICT_par` 
+* <config_file_path>: Path to the configuration file for the CICT algorithm
+* <force_output>: Set to 'TRUE' to overwrite existing outputs, 'FALSE' otherwise
+* <use_preset_learning> (optional): Set to `TRUE` to use use existing learning set edges in `train.csv`and `test.csv`, default to `FALSE`
 
 
-* To run CICT, first use operation `calcEdges` to calculate raw edge weights:
+To run CICT, first use operation `calcEdges` to calculate raw edge weights:
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R calcEdges config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE
 ```
 This creates the file `{input_dir}/{dataset_dir}/{datasets.name}/rawEdges.csv`
 
-* use the operation `runCICT` to conduct CICT training and prediction using learning sets sampled from the ground truth:
+Then use the operation `runCICT` to conduct CICT training and prediction using learning sets sampled from the ground truth:
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE
 ```
-* Alternatively, to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the `use_preset_learning` argument and set it to TRUE.
+Alternatively, to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the `use_preset_learning` argument and set it to TRUE.
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files-split/config_L0_split/hHep/CICT/config.yaml TRUE TRUE
 ```
-This creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
+`calcCICT` creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
 
-## 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
+### 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
 
-* Start R in the `PROJ_ROOT` directory.
+Start R in the `PROJ_ROOT` directory.
 
-* Source the `runCICTEval2.R` script to load the required libraries and functions
+Set the varaible `args.cmnd` for calculating raw edge weights or run CICT (see 2a) and source the driver script `runCICTEval2`.
+
+To calculate edge weights
 ```
+args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
 source('Algorithms/CICT/runCICTEval2.R')
 ```
 
-* Set the varaible `args.cmnd` for calculating raw edge weights or run CICT (see 2a) and call the driver function `runCICTEval2`
+To run CICT training and prediction
 ```
-args.cmnd = c('calcEdges','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
-runCICTEval2(args.cmnd)
-```
-
-
-### 2c. Running CICT in R using `CICT` fucntion
-The `CICT` function allows the CICT to be run without a configuration file.
-```
-CICT(theJobID, url.input, url.rawedgefile, url.name.map, url.gt, url.output, url.logfile, cictRawEdgeCol, earlyThresholdForGraphAnalysis, minGroundTruth.ratio.learning, maxunseenTest.ratio, maxGroundTruth, randomEdgesFoldCausal, sampling.c_rc.ratio, trainingTarget, tstPrecent, forceOutput, arg.experiment, FLAG_runOnAllEdges, FLAG_exportRankedEdges, FLAG_exportTrainAndTest, Debug, RF_max_depth, RF_ntrees, preset.train, preset.test, maxNetSize, ...)
+args.cmnd = c('runCICT','config-files-split/config_L0_split/hHep/CICT/config.yaml', TRUE) 
+source('Algorithms/CICT/runCICTEval2.R')
 ```
 
 ## 3. Additional Notes
 
-### If you want to run the CICT algorithm in parallel, use the future.batchtools and batchtools libraries and configure the parallel settings as needed.
+* If you want to run the CICT algorithm in parallel, use the future.batchtools and batchtools libraries and configure the parallel settings as needed.
 
-### You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm.
+* You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm. See the operations `config_par`, `calcEdges_par`, `runCICT_par`.
 
-Please refer to the code comments for more information on the CICT algorithm and its configuration options.
+* Please refer to the code comments for more information on the CICT algorithm and its configuration options.
