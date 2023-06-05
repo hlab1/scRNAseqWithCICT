@@ -1,0 +1,68 @@
+# Input Settings: initialize base input folder names,
+# dataset collections, and algorithms to run over
+input_settings:
+
+    # Directory for singularity images, absolute path
+    sif_dir: "$(pwd)/images_singularity/"
+    overlay_dir: "$(pwd)/images_singularity_overlay"
+    gpu_flag: "--nv"
+
+    # Base input directory
+    input_dir : "inputs"
+
+    # Subdirectory of inputs that datasets are placed in
+    dataset_dir: "SERGIO_DS4"
+    full_dataset_dir: "SERGIO_DS4"
+
+    # Denotes a list of datasets, each with the following parameters:
+    #   name: Name of the dataset. May be used in logging or other
+    #       messages written during execution
+    #
+    #   exprData: scRNA-Seq expression data file. Cells are along the
+    #            columns and genes are along the rows.
+    #   cellData: a file containing pseudotime ordering, or any other 
+    #             information about cells.
+    #   trueEdges: Name of the refrence network file in the
+    #              edge list format. Needed for evaluation.
+    datasets:
+
+        - name: "net0"
+          exprData: "ExpressionData.csv"  
+          cellData: "SlingshotPT.csv"
+          trueEdges: "refNetwork.csv"
+
+        - name: "net1"
+          exprData: "ExpressionData.csv"  
+          cellData: "SlingshotPT.csv"
+          trueEdges: "refNetwork.csv"
+
+    #   name: Name of the algorithm. Must be recognized by the pipeline, see
+    #       code for acceptable values
+    #
+    #   should_run: whether or not to run the algorithm
+    #
+    #   params: any additional, algorithm-specific parameters
+    #       should be specified in the params map for a given algorithm
+    #
+
+
+    algorithms:
+
+        - name: "CICT"
+          params: 
+              should_run: [True]
+              groundTruth: ['refNetwork.csv']
+              edgeTypes: ['ewMImm,ewMIempirical,ewMIshrink ,efMIempirical, Pearson,,Kendall,Spearman,Euclidean,L10NormManhattan,Granger']
+              supervised.positiveClass: ['c,rc']  # c:causal edges, 'c,rc': causal and reversecausal
+              supervised.negativeClass: ['r']  # r:random edges, 'rc': reversecausal
+              supervised.gtProp: [.2] #proportion of GT used for classification
+              supervised.train: [.3] #proportion of classification records used for training
+              fp.fn.cost: [1/5]  #False positive to False Negative cost ratio for threshold identification
+
+
+# Output Settings: initialize base output folder names
+output_settings:
+
+    # Base output directory
+    output_dir: "outputs"
+    output_prefix: "SERGIO_DS4"
