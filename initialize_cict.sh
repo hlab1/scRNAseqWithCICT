@@ -35,10 +35,19 @@ conda install -c conda-forge mamba
 mamba create -y --name ${ALG} -c conda-forge r-base=4.1.2
 conda activate ${ALG}
 mamba install -y -c conda-forge libgit2 gmp time 
-mamba intall -c conda-forge r-ragg
+mamba install -c conda-forge r-ragg
 R -e \"install.packages('remotes',repos='https://cloud.r-project.org')\"
 "
 echo "Singularity files for ${ALG}: image is ${SIF_DIR}/${ALG}.sif, overlay is ${EXT3_DIR}/${ALG}.ext3"
+# CICT_RENV
+cd ${BASEDIR}; singularity exec --overlay ${EXT3_DIR}/${ALG}.ext3 ${SIF_DIR}/${ALG}.sif \
+			   /bin/sh -c "
+mamba create -y --name CICT_RENV -c conda-forge r-base=4.1.2
+conda activate CICT_RENV
+mamba install -y -c conda-forge libgit2 gmp time r-agg
+R -e \"install.packages('renv',repos='https://cloud.r-project.org')\"
+"
+# In R, do "renv::init('.')
 
 singularity exec --overlay ${EXT3_DIR}/${ALG}.ext3 ${SIF_DIR}/${ALG}.sif \
 	    /bin/sh -c "
@@ -47,3 +56,4 @@ conda activate CICT
 Rscript CICT_pipeline/runCICTEval2.R runCICT config-files-split/config_SERGIO_DS4_split/net0/CICT/config.yaml TRUE
 "
 cd $BASEDIR
+
