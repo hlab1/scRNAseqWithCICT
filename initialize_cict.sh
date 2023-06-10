@@ -44,7 +44,7 @@ cd ${BASEDIR}; singularity exec --overlay ${EXT3_DIR}/${ALG}.ext3 ${SIF_DIR}/${A
 			   /bin/sh -c "
 mamba create -y --name CICT_RENV -c conda-forge r-base=4.1.2
 conda activate CICT_RENV
-mamba install -y -c conda-forge libgit2 gmp time r-agg
+mamba install -y -c conda-forge libgit2 gmp time r-ragg
 R -e \"install.packages('renv',repos='https://cloud.r-project.org')\"
 "
 # In R, do "renv::init('.')
