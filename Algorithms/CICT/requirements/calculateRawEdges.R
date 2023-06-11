@@ -9,21 +9,20 @@ nParallelThreads = 12
     print(" - Processing in parallel - ")
     
     
-    source(here::here('Algorithms','CICT','requirements','rnR_Framework.R'))
-    #source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
+    source(here::here('Algorithms','CICT','requirements','rnR_Framework.R')) #source('/scratch/as15096/eric/Algorithms/CICT/requirements/rnR_Framework.R')
     #s0m3
     library(doParallel);
-    #print(url.data)
+    
     outFolder = dirname (url.data)
     actualDataset <-read.csv(url.data) 
     genecol = str_subset(colnames(actualDataset),'X|^(G|g)ene$')
     if(length(genecol)>0) actualDataset =actualDataset %>% column_to_rownames(genecol) 
     actualDataset = actualDataset %>% select_if(is.numeric) #genes in rows and cells in columns  #  stop('Set correct data source') #  all.tdt
       
+    
     actualDatasetNNodes <- nrow(actualDataset) + 1;
     actualDatasetNObservations <- ncol(actualDataset);
-    actualDatasetName <- basename(url.data)
-    #actualDatasetName <- basename(url.input)
+    actualDatasetName <- basename(url.data) #actualDatasetName <- basename(url.input)
     actualDatasetSymbolicPatterns=0;
     actualDatasetPatterns=0
     
@@ -54,8 +53,7 @@ nParallelThreads = 12
       clusterEvalQ(processingCluster, library(igraph));
       clusterEvalQ(processingCluster, library(minet));
       clusterEvalQ(processingCluster, here::i_am("Algorithms/CICT/requirements/calculateRawEdges.R"))
-      clusterEvalQ(processingCluster, source(here::here('Algorithms','CICT','requirements','rnR_Framework.R')));
-      #clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
+      clusterEvalQ(processingCluster, source(here::here('Algorithms','CICT','requirements','rnR_Framework.R'))); #clusterEvalQ(processingCluster, source('Algorithms/CICT/requirements/rnR_Framework.R'));
     })
 
     #If has more cores available then the number of simulations, let them be used on parallelizing subprocesses
