@@ -50,4 +50,3 @@ R -e \"install.packages('renv',repos='https://cloud.r-project.org')\"
 #PKG_CONFIG_PATH=/ext3/miniconda3/envs/CICT_RENV/lib/pkgconfig R --no-restore
 #R: renv::init('.',bioconductor=TRUE); renv::install(c("Bioc::RCy3","Bioc::WGCNA","Bioc::minet")); renv::install("kmlShape@0.9.5"); renv::snapshot()
 
-RCy3, WGCNA, kmlShape, minet 
