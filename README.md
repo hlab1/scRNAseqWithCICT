@@ -14,7 +14,7 @@ Before running the CICT algorithm, you need to set up your working environment, 
 
 ### 1a. Install R dependencies
 
-The pre-requisite packages are installed by the `requirement.r` script. 
+The pre-requisite packages can be installed by running the `requirements.r` script. Or, if you have [renv](https://rstudio.github.io/renv/) set up,  you can call the function `renv::restore()` in R from the `PROJ_ROOT` directory, which will use the `renv.lock` file provided to restore the project library.
 
 ### 1b. Make configration file
 
@@ -22,14 +22,14 @@ See example in `config-files/config_SERGIO_DS4_net01_CICT.yaml`.  It defines the
 
 ### 1c. Organize expression data file
 
-The file paths are constructed from values specified in the configuration file in 1b. The gene expression data file is a comma-separated text file with header in the path  `{input_dir}/{dataset_dir}/{datasets.name}/{exprData}`. The ground-truth network is a comma-seperated text file with header in `{input_dir}/{dataset_dir}/{datasets.name}/{refNetwork}`.  See examples in `inputs/SERGIO_DS4/net0` and `inputs/SERGIO_DS4/net1`.
+The file paths are constructed from values specified in the configuration file in 1b. The gene expression data file is a comma-separated text file in the path  `{input_dir}/{dataset_dir}/{datasets.name}/{exprData}`. The ground-truth network is a comma-seperated text file in `{input_dir}/{dataset_dir}/{datasets.name}/{refNetwork}`.  See examples in `inputs/SERGIO_DS4/net0` and `inputs/SERGIO_DS4/net1`.
 
 
 ## 2. Running CICT
 
 ### 2a. Running CICT on the command line
 
-CICT can be called directory on the command line with the configuration file with command line arguments in this format:
+CICT can be called directory on the command line with the configuration file and command line arguments in this format:
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R <operation> <config_file_path> <force_output> [<use_preset_learning>]
@@ -41,7 +41,9 @@ The arguments are:
 * <use_preset_learning> (optional): Set to `TRUE` to use use existing learning set edges in `train.csv`and `test.csv`, default to `FALSE`
 
 
-To run CICT, first use operation `calcEdges` to calculate raw edge weights:
+Basic workflow of CICT involves two operations: `calcEdges` and `runCICT`.
+
+First use operation `calcEdges` to calculate raw edge weights:
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R calcEdges config-files/config_SERGIO_DS4_net01_CICT.yaml TRUE
@@ -55,13 +57,12 @@ Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files/config_SERGIO_DS4_ne
 ```
 This creates the inferred network in output file `{output_dir}/{dataset_dir}/{datasets.name}/CICT/rankedEdges.csv`.
 
-If you want to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the `use_preset_learning` argument and set it to TRUE.
+If you want to use existing training and test set files in the `{output_dir}/{dataset_dir}/{datasets.name}/CICT` folder, add the fourth argument (`use_preset_learning`) set it to TRUE. 
 ```
 cd $PROJ_ROOT
 Rscript Algorithms/CICT/runCICTEval2.R runCICT config-files/config_SERGIO_DS4_net01_CICT.yaml TRUE TRUE
 ```
 This uses the `train.csv` and `test.csv` learning sets from the previous run.
-
 
 ### 2b. Running CICT in R using configuration file and `runCICTEval2.R` driver script
 
