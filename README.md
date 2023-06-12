@@ -2,7 +2,7 @@
 
 **Reference**: Abbas Shojaee and Shao-shan Carol Huang, Robust discovery of gene regulatory networks from single-cell gene expression data using Causal Inference with Composition of Transactions. Manuscript in preparation. 2023.
 
-This repository contains code to run the CICT (Causal Inference Causality Test) algorithm on various datasets. The code is organized into two main parts:
+This repository contains code to run the CICT (Causal Inference Using Composition of Transactions) algorithm on various datasets. The code is organized into two main parts:
 
 * Initial setup and configuration
 * Execution of the CICT algorithm
