@@ -95,3 +95,7 @@ source('Algorithms/CICT/runCICTEval2.R')
 * You can modify the code to add new datasets, change the edge types, and adjust the algorithm settings as needed.  The code also supports sensitivity analysis and scaling tests for evaluating the performance of the CICT algorithm. See the operations `config_par`, `calcEdges_par`, `runCICT_par`.
 
 * Please refer to the code comments for more information on the CICT algorithm and its configuration options.
+
+## 4. License
+scRNAseqWithCICT is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
+[![License: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc/4.0/)
