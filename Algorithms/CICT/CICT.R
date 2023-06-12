@@ -1,7 +1,7 @@
 ################################################################################@
 # © 2016 Abbas Shojaee <abbas.shojaee@gmail.com>
 # Causal Inference Using Composition of Transactions CICT
-# All rights reserved, please do not use or distribute without written permission
+# All rights reserved, please do not use, modify or distribute without written permission
 ################################################################################@
 
 ################################################################################@
