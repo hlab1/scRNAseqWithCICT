@@ -1,5 +1,4 @@
-
-# CICT for Gene Regulatory Network Inference from Single-cell Gene Expression Data
+# CICT for Gene Regulatory Network Inference from Gene Expression Data
 
 **Reference**: Abbas Shojaee and Shao-shan Carol Huang, Robust discovery of gene regulatory networks from single-cell gene expression data using Causal Inference with Composition of Transactions. Manuscript in preparation. 2023.
 
