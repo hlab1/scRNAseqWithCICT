@@ -97,7 +97,7 @@ source('Algorithms/CICT/runCICTEval2.R')
 * Please refer to the code comments for more information on the CICT algorithm and its configuration options.
 
 ## 4. License
-scRNAseqWithCICT is licensed under Creative Commons Attribution-NonCommercial-ShareAlike (BY-NC-SA) (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode) provided the following addendum:
+scRNAseqWithCICT  algorithm and source code is licensed under Creative Commons Attribution-NonCommercial-ShareAlike (BY-NC-SA) (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode) provided the following addendum:
 
 1. **Definitions**
 
@@ -118,8 +118,8 @@ scRNAseqWithCICT is licensed under Creative Commons Attribution-NonCommercial-Sh
    2.2. **Patent Rights:** Each contributor grants you a non-exclusive, worldwide, royalty-free patent license under the contributor's essential patent claims in its contribution, to make, use, sell, offer for sale, import and otherwise run, modify and propagate the contribution.
 
 3. **Limitations on Rights**
+   3.1. **Noncommercial Use:** You may copy, distribute, display, perform, and modify the Covered Work, but solely for Noncommercial purposes. All modifications must also be for noncommercial purposes unless a separate permission is obtained from the rights holder. For any Commercial Use of the Covered Work, you must obtain separate permission from the rights holder.
 
-   3.1. **Noncommercial Use:** You may copy, distribute, display, perform, and modify the Covered Work, but solely for Noncommercial purposes. For any Commercial Use of the Covered Work, you must obtain separate permission from the rights holder.
 
    3.2. **Network Use:** If you make the Covered Work available over a network, you must also provide the Source Code, so that users interacting with the work over the network may also modify or create derivatives of the Covered Work under the same terms as in this License.
 
@@ -128,3 +128,7 @@ scRNAseqWithCICT is licensed under Creative Commons Attribution-NonCommercial-Sh
    4.1. Unless separately stated in writing by the copyright holder, the Covered Work is provided under this License on an "as is" basis, without warranties or conditions of any kind, either express or implied including, without limitation, any warranties or conditions of title, non-infringement, merchantability, or fitness for a particular purpose. 
 
    4.2. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+
+5. **Commercial Licensing**
+
+   5.1. This License allows for use of the Covered Work for non-commercial purposes only. If you wish to use the Work for a commercial purpose, please contact the copyright holders to arrange for a separate commercial license.
