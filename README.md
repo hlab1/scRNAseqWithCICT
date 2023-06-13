@@ -97,5 +97,7 @@ source('Algorithms/CICT/runCICTEval2.R')
 * Please refer to the code comments for more information on the CICT algorithm and its configuration options.
 
 ## 4. License
-scRNAseqWithCICT is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
-[![License: CC BY-NC 4.0](https://licensebuttons.net/l/by-nc/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc/4.0/)
+This software is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version, provided that any commercial use or commercial distribution of this software or any derivatives is strictly prohibited without prior express written permission from the author(s).
+
+Any modifications to or derivative works from this software must be made openly available to the public under the same terms of this license, and must clearly credit the original authorship in any resulting distributions or public uses.
+[![License: GNU AGPL - no commercial use](https://www.gnu.org/licenses/agpl-3.0.en.html)
