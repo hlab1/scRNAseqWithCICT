@@ -100,4 +100,4 @@ source('Algorithms/CICT/runCICTEval2.R')
 This software is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version, provided that any commercial use or commercial distribution of this software or any derivatives is strictly prohibited without prior express written permission from the author(s).
 
 Any modifications to or derivative works from this software must be made openly available to the public under the same terms of this license, and must clearly credit the original authorship in any resulting distributions or public uses.
-[![License: GNU AGPL - no commercial use](https://www.gnu.org/licenses/agpl-3.0.en.html)
+[![License: GNU AGPL - no commercial use allowed](https://www.gnu.org/licenses/agpl-3.0.en.html)]
