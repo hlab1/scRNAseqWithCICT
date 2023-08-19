@@ -3,6 +3,26 @@
     "Version": "4.2.2",
     "Repositories": [
       {
+        "Name": "BioCsoft",
+        "URL": "https://bioconductor.org/packages/3.16/bioc"
+      },
+      {
+        "Name": "BioCann",
+        "URL": "https://bioconductor.org/packages/3.16/data/annotation"
+      },
+      {
+        "Name": "BioCexp",
+        "URL": "https://bioconductor.org/packages/3.16/data/experiment"
+      },
+      {
+        "Name": "BioCworkflows",
+        "URL": "https://bioconductor.org/packages/3.16/workflows"
+      },
+      {
+        "Name": "BioCbooks",
+        "URL": "https://bioconductor.org/packages/3.16/books"
+      },
+      {
         "Name": "CRAN",
         "URL": "https://cloud.r-project.org"
       }
@@ -16,10 +36,6 @@
       "Package": "AnnotationDbi",
       "Version": "1.60.2",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/AnnotationDbi",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "eebebb2",
-      "git_last_commit_date": "2023-03-09",
       "Requirements": [
         "Biobase",
         "BiocGenerics",
@@ -40,10 +56,6 @@
       "Package": "Biobase",
       "Version": "2.58.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/Biobase",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "767f2f3",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "R",
@@ -56,10 +68,6 @@
       "Package": "BiocGenerics",
       "Version": "0.44.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/BiocGenerics",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "d7cd9c1",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "R",
         "graphics",
@@ -79,14 +87,19 @@
       ],
       "Hash": "be203e7eea75514bc1a41c1de39a9bb9"
     },
+    "BiocVersion": {
+      "Package": "BiocVersion",
+      "Version": "3.16.0",
+      "Source": "Bioconductor",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "44c5824508b9a10e52dbb505c34fa880"
+    },
     "Biostrings": {
       "Package": "Biostrings",
       "Version": "2.66.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/Biostrings",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "3470ca7",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "GenomeInfoDb",
@@ -186,10 +199,6 @@
       "Package": "GenomeInfoDb",
       "Version": "1.34.9",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/GenomeInfoDb",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "24d7cb9",
-      "git_last_commit_date": "2023-02-02",
       "Requirements": [
         "BiocGenerics",
         "GenomeInfoDbData",
@@ -244,10 +253,6 @@
       "Package": "IRanges",
       "Version": "2.32.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/IRanges",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "2b5c9fc",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "R",
@@ -294,10 +299,6 @@
       "Package": "KEGGREST",
       "Version": "1.38.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/KEGGREST",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "4dfbff9",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "Biostrings",
         "R",
@@ -447,10 +448,6 @@
       "Package": "RCy3",
       "Version": "2.18.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/RCy3",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "b3e5f7b",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "IRdisplay",
@@ -609,10 +606,6 @@
       "Package": "S4Vectors",
       "Version": "0.36.2",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/S4Vectors",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "1671008",
-      "git_last_commit_date": "2023-02-25",
       "Requirements": [
         "BiocGenerics",
         "R",
@@ -697,10 +690,6 @@
       "Package": "XVector",
       "Version": "0.38.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/XVector",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "8cad084",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "IRanges",
@@ -2075,10 +2064,6 @@
       "Package": "graph",
       "Version": "1.76.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/graph",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "e3efc10",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "BiocGenerics",
         "R",
@@ -2412,10 +2397,6 @@
       "Package": "impute",
       "Version": "1.72.3",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/impute",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "10f9b0d",
-      "git_last_commit_date": "2023-01-19",
       "Requirements": [
         "R"
       ],
@@ -2751,10 +2732,6 @@
       "Package": "minet",
       "Version": "3.56.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/minet",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "53e597c",
-      "git_last_commit_date": "2022-11-01",
       "Requirements": [
         "infotheo"
       ],
@@ -3187,10 +3164,6 @@
       "Package": "preprocessCore",
       "Version": "1.60.2",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/preprocessCore",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "71fbf1d",
-      "git_last_commit_date": "2023-01-19",
       "Requirements": [
         "stats"
       ],
@@ -4648,10 +4621,6 @@
       "Package": "zlibbioc",
       "Version": "1.44.0",
       "Source": "Bioconductor",
-      "git_url": "https://git.bioconductor.org/packages/zlibbioc",
-      "git_branch": "RELEASE_3_16",
-      "git_last_commit": "d39f0b0",
-      "git_last_commit_date": "2022-11-01",
       "Hash": "6f578730acbdfc7ce2ca49df29bb5352"
     },
     "zoo": {
