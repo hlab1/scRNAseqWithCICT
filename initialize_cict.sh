@@ -31,7 +31,9 @@ cd ${BASEDIR}; singularity exec --overlay ${EXT3_DIR}/${ALG}.ext3 ${SIF_DIR}/${A
 sh ${CONDA_DIR}/Miniconda3-py37_4.10.3-Linux-x86_64.sh -b -p /ext3/miniconda3
 cp ${CONDA_DIR}/overlay_ext3_mc3.sh /ext3/env.sh
 source /ext3/env.sh
-conda install -c conda-forge mamba 
+conda update -n base conda -y
+conda clean --all --yes
+conda install -n base --override-channels -c conda-forge mamba=0.27.0 'python_abi=*=*cp*' #conda install -c conda-forge mamba 
 mamba create -y --name ${ALG} -c conda-forge r-base=4.1.2
 conda activate ${ALG}
 mamba install -y -c conda-forge libgit2 gmp time 
@@ -47,6 +49,9 @@ conda activate CICT_RENV
 mamba install -y -c conda-forge libgit2 gmp time
 R -e \"install.packages('renv',repos='https://cloud.r-project.org')\"
 "
+###To initialize lock file
 #PKG_CONFIG_PATH=/ext3/miniconda3/envs/CICT_RENV/lib/pkgconfig R --no-restore
-#R: renv::init('.',bioconductor=TRUE); renv::install(c("Bioc::RCy3","Bioc::WGCNA","Bioc::minet")); renv::install("kmlShape@0.9.5"); renv::snapshot()
-
+#In R: renv::init('.',bioconductor=TRUE); renv::install(c("Bioc::RCy3","Bioc::WGCNA","Bioc::minet")); renv::install("kmlShape@0.9.5"); renv::snapshot()
+###To restore from lock file, simplly run
+# PKG_CONFIG_PATH=/ext3/miniconda3/envs/CICT_RENV/lib/pkgconfig R --no-restore
+# In R: renv::restore()
