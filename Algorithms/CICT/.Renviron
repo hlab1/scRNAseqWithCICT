@@ -1,0 +1,4 @@
+RENV_PATHS_ROOT='/ext3/renv'
+RENV_PATHS_LIBRARY='/ext3/renv_project_library/scRNAseqWithCICT'
+RENV_PATHS_SANDBOX='/ext3/renv/sandbox'
+
