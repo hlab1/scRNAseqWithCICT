@@ -96,7 +96,7 @@ source('Algorithms/CICT/runCICTEval2.R')
 * Please refer to the code comments for more information on the CICT algorithm and its configuration options.
 
 ## 4. License
-This work, including its associated source and materials, is provided under a modified CC BY-SA-NC license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode), for public, non-commercial purposes. Commercial use or applications are subject to a distinct licensing agreement. Parties interested in commercial licensing should reach out to the corresponding authors for further details.
+This work, including its associated source and materials, is provided under a modified CC BY-NC-SA license (https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode), for public, non-commercial purposes. Commercial use or applications are subject to a distinct licensing agreement. Parties interested in commercial licensing should reach out to the corresponding authors for further details.
 
 **Warranty of Provenance and Disclaimer of Warranty.** The Original Work is provided under this License on an “AS IS” BASIS and WITHOUT WARRANTY, either express or implied, including, without limitation, the warranties of non-infringement, merchantability or fitness for a particular purpose. THE ENTIRE RISK AS TO THE QUALITY OF THE ORIGINAL WORK IS WITH YOU. This DISCLAIMER OF WARRANTY constitutes an essential part of this License. No license to the Original Work is granted by this License except under this disclaimer.
 
