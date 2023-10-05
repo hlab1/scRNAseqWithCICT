@@ -1,3 +1,8 @@
+"This is a modified edition of the code provided by Kuzmanovski et al. to produce raw edge measurements:
+
+Kuzmanovski V, Todorovski L, Džeroski S. Extensive evaluation of the generalized relevance network approach to inferring gene regulatory networks. Gigascience. 2018 Nov 1;7(11):giy118. doi: 10.1093/gigascience/giy118. PMID: 30239704; PMCID: PMC6420648.
+"
+
 ################ Get and setup data ###############################
 getExpresionMatrix <- function(filePath, nrows, ncolumns, byrow = TRUE,what='character')
 {
